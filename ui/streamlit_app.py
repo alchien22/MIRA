@@ -5,13 +5,13 @@ from dotenv import load_dotenv
 
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
-from ensemble import ensemble_retriever_from_docs
-from full_chain import create_full_chain, ask_question
-from local_loader import load_txt_files
+from retrieval.ensemble import ensemble_retriever_from_docs
+from rag.full_chain import create_full_chain, ask_question
+from retrieval.local_loader import load_txt_files
 
 load_dotenv()
 
-MODEL_ID = "meta-llama/Llama-3.2-3B-Instruct"
+MODEL_ID = "ProbeMedicalYonseiMAILab/medllama3-v20"
 os.environ["MODEL_ID"] = MODEL_ID
 
 st.set_page_config(
@@ -41,10 +41,24 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
     if st.session_state.messages[-1]["role"] != "assistant":
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
-                response = ask_question(qa, prompt)
-                st.markdown(response.content)
+                response_data = ask_question(qa, prompt)
+                response = response_data["response"]
+                confidence = response_data["confidence"]
+
+                if confidence > 0.8:
+                    confidence_text = f"**Confidence Score:** {confidence:.2f} (High Confidence)"
+                    confidence_color = "green"
+                elif confidence > 0.5:
+                    confidence_text = f"**Confidence Score:** {confidence:.2f} (Medium Confidence)"
+                    confidence_color = "orange"
+                else:
+                    confidence_text = f"**Confidence Score:** {confidence:.2f} (Low Confidence - Double Check Output)"
+                    confidence_color = "red"
+
+                st.markdown(response)
+                st.markdown(f"<p style='color:{confidence_color}; font-weight: bold;'>{confidence_text}</p>", unsafe_allow_html=True)
                 
-        message = {"role": "assistant", "content": response.content}
+        message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)
 
 
