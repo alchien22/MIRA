@@ -11,3 +11,6 @@ huggingface-hub==0.28.1
 scikit-learn
 torch
 transformers
+accelerate
+huggingface_hub
+bitsandbytes
