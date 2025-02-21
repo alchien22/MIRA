@@ -6,16 +6,9 @@ from langchain.docstore.document import Document
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders.csv_loader import CSVLoader
 
-
-def list_txt_files(data_dir="./data"):
-    paths = Path(data_dir).glob('**/*.txt')
-    for path in paths:
-        yield str(path)
-
-
 def load_txt_files(data_dir="./data"):
     docs = []
-    paths = list_txt_files(data_dir)
+    paths = Path(data_dir).glob('**/*.txt')
     for path in paths:
         print(f"Loading {path}")
         loader = TextLoader(path)
@@ -32,8 +25,6 @@ def load_csv_files(data_dir="./data"):
     return docs
 
 
-# Use with result of file_to_summarize = st.file_uploader("Choose a file") or a string.
-# or a file like object.
 def get_document_text(uploaded_file, title=None):
     docs = []
     fname = uploaded_file.name

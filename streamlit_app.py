@@ -18,9 +18,8 @@ st.set_page_config(
     page_title="MIRA",
     page_icon="💉",
     layout="centered",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded",
     )
-st.title("Hi, I am MIRA! Your EHR Assistant 🩺🤖")
 
 def show_ui(qa, prompt_to_user="How may I help you?"):
     if "messages" not in st.session_state.keys():
@@ -60,17 +59,9 @@ def get_chain():
     return chain
 
 
-def get_secret_or_input(secret_key, secret_name, info_link=None):
-    if secret_key in st.secrets:
-        st.write("Found %s secret" % secret_key)
-        secret_value = st.secrets[secret_key]
-    else:
-        st.write(f"Please provide your {secret_name}")
-        secret_value = st.text_input(secret_name, key=f"input_{secret_key}", type="password")
-        if secret_value:
-            st.session_state[secret_key] = secret_value
-        if info_link:
-            st.markdown(f"[Get an {secret_name}]({info_link})")
+def get_secret_or_input():
+    if 'HUGGINGFACEHUB_API_TOKEN' in st.secrets:
+        secret_value = st.secrets['HUGGINGFACEHUB_API_TOKEN']
     return secret_value
 
 
@@ -79,10 +70,8 @@ def run():
 
     huggingfacehub_api_token = st.session_state.get("HUGGINGFACEHUB_API_TOKEN")
 
-    with st.sidebar:
-        if not huggingfacehub_api_token:
-            huggingfacehub_api_token = get_secret_or_input('HUGGINGFACEHUB_API_TOKEN', "HuggingFace Hub API Token",
-                                                           info_link="https://huggingface.co/docs/huggingface_hub/main/en/quick-start#authentication")
+    if not huggingfacehub_api_token:
+        huggingfacehub_api_token = get_secret_or_input()
 
     if not huggingfacehub_api_token:
         st.warning("Missing HUGGINGFACEHUB_API_TOKEN")
@@ -90,8 +79,14 @@ def run():
 
     if ready:
         chain = get_chain()
-        st.subheader("Ask me anything about a patient's medical history, symptoms, or treatment!")
+
+        with st.sidebar:
+            st.metric("Confidence", "High", "99%") # TODO: Write function that updates this
+
+        st.title("Hi, I am MIRA! Your EHR Assistant🤖")
+        st.subheader("Ask me about a patient's medical history!")
         show_ui(chain, "What would you like to know?")
+
     else:
         st.stop()
 

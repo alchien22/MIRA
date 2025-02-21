@@ -6,3 +6,6 @@ __pycache__/
 .idea/
 .python-version
 store/
+EHRNoteQA/
+discharge_notes/
+discharge.csv
