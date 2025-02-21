@@ -32,8 +32,11 @@ def create_full_chain(retriever, chat_memory=ChatMessageHistory()):
 
 
 def ask_question(chain, query):
-    response = chain.invoke(
+    response_data = chain.invoke(
         {"question": query},
         config={"configurable": {"session_id": "foo"}}
     )
-    return response
+    if "response" in response_data and "confidence" in response_data:
+        return response_data
+
+    return {"response": str(response_data), "confidence": 0.0}
