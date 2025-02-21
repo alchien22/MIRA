@@ -1,37 +1,29 @@
 import os
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from confidence import compute_entropy_confidence, compute_perplexity_confidence
-# from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-# def get_model():
-      
-# 	llm = HuggingFaceEndpoint(
-# 		repo_id=os.getenv("MODEL_ID"),
-# 		task="text-generation",
-# 		max_new_tokens=100,
-# 		do_sample=False
-# 	)
-
-# 	llm_chat_engine = ChatHuggingFace(llm=llm)
-# 	return llm_chat_engine
-
+from .confidence import compute_entropy_confidence, compute_perplexity_confidence
 
 def get_model():
     """Loads model and tokenizer"""
     model_name = os.getenv("MODEL_ID")
+    quant_config = BitsAndBytesConfig(load_in_8bit=True)
     
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name, output_hidden_states=True)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name, 
+        device_map="auto", 
+        quantization_config=quant_config, 
+        output_hidden_states=True
+    )
     
     model.eval()
-
     return model, tokenizer
 
 
 def generate_response_with_latents(model, tokenizer, input_text, confidence_method="entropy"):
     """Generates response and extracts latent representation & base confidence"""
-    inputs = tokenizer(input_text, return_tensors="pt")
+    inputs = tokenizer(input_text, return_tensors="pt").to("cuda")
 
     with torch.no_grad():
         outputs = model(**inputs, output_hidden_states=True, return_dict=True)

@@ -2,8 +2,8 @@ from langchain.memory import ChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate
 
 from models.inference_api import get_model
-from memory import create_memory_chain
-from rag_chain import make_rag_chain
+from .memory import create_memory_chain
+from .rag_chain import make_rag_chain
 
 
 def create_full_chain(retriever, chat_memory=ChatMessageHistory(), confidence_method="entropy"):

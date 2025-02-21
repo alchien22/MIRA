@@ -4,7 +4,7 @@ import os
 from typing import List
 from time import sleep
 
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
 EMBED_DELAY = 0.02  # 20 milliseconds

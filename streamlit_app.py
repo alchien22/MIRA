@@ -67,44 +67,16 @@ def get_retriever():
 
 def get_chain():
     ensemble_retriever = get_retriever()
-    confidence_method = "entropy"
-    chain = create_full_chain(ensemble_retriever, chat_memory=StreamlitChatMessageHistory(key="langchain_messages"), confidence_method=confidence_method)
+    chain = create_full_chain(ensemble_retriever, chat_memory=StreamlitChatMessageHistory(key="langchain_messages"), confidence_method="entropy")
     return chain
 
 
-def get_secret_or_input(secret_key, secret_name, info_link=None):
-    if secret_key in st.secrets:
-        st.write("Found %s secret" % secret_key)
-        secret_value = st.secrets[secret_key]
-    else:
-        st.write(f"Please provide your {secret_name}")
-        secret_value = st.text_input(secret_name, key=f"input_{secret_key}", type="password")
-        if secret_value:
-            st.session_state[secret_key] = secret_value
-        if info_link:
-            st.markdown(f"[Get an {secret_name}]({info_link})")
-    return secret_value
-
-
 def run():
-    ready = True
-
-    huggingfacehub_api_token = st.session_state.get("HUGGINGFACEHUB_API_TOKEN")
-
-    with st.sidebar:
-        if not huggingfacehub_api_token:
-            huggingfacehub_api_token = get_secret_or_input('HUGGINGFACEHUB_API_TOKEN', "HuggingFace Hub API Token",
-                                                           info_link="https://huggingface.co/docs/huggingface_hub/main/en/quick-start#authentication")
-
-    if not huggingfacehub_api_token:
-        st.warning("Missing HUGGINGFACEHUB_API_TOKEN")
-        ready = False
-
-    if ready:
-        chain = get_chain()
-        st.subheader("Ask me anything about a patient's medical history, symptoms, or treatment!")
-        show_ui(chain, "What would you like to know?")
-    else:
-        st.stop()
+    if "langchain_messages" not in st.session_state:
+        st.session_state["langchain_messages"] = []
+        
+    chain = get_chain()
+    st.subheader("Ask me anything about a patient's medical history, symptoms, or treatment!")
+    show_ui(chain, "What would you like to know?")
 
 run()

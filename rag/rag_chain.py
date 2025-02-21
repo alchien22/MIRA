@@ -1,5 +1,6 @@
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.messages.base import BaseMessage
+
 from models.confidence import compute_confidence_score, batch_extract_latents
 from models.inference_api import generate_response_with_latents
 

@@ -3,7 +3,7 @@ from langchain_community.document_transformers import EmbeddingsRedundantFilter,
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings, HuggingFaceEmbeddings
 from langchain.retrievers import ContextualCompressionRetriever, MergerRetriever
 
-from vector_store import create_vector_db
+from .vector_store import create_vector_db
 
 def create_retriever(texts):
     dense_embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")

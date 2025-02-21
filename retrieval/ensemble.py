@@ -1,8 +1,8 @@
 from langchain_community.retrievers import BM25Retriever
 from langchain.retrievers import EnsembleRetriever
 
-from splitter import split_documents
-from ector_store import create_vector_db
+from .splitter import split_documents
+from .vector_store import create_vector_db
 
 
 def ensemble_retriever_from_docs(docs, embeddings=None):
