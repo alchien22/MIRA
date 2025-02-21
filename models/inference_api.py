@@ -7,7 +7,7 @@ from .confidence import compute_entropy_confidence, compute_perplexity_confidenc
 def get_model():
     """Loads model and tokenizer"""
     model_name = os.getenv("MODEL_ID")
-    quant_config = BitsAndBytesConfig(load_in_8bit=True)
+    quant_config = BitsAndBytesConfig(load_in_8bit=True, llm_int8_enable_fp32_cpu_offload=True)
     
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
