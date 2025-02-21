@@ -40,10 +40,13 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
     if st.session_state.messages[-1]["role"] != "assistant":
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
-                response = ask_question(qa, prompt)
-                st.markdown(response.content)
+                response_data = ask_question(qa, prompt)
+                response = response_data.get("response", "I couldn't generate a response.")
+                confidence = response_data.get("confidence", 0.0)
+                st.markdown(response)
+                st.write(f"**Confidence Score:** {confidence:.2f}")
                 
-        message = {"role": "assistant", "content": response.content}
+        message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)
 
 
