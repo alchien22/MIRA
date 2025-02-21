@@ -42,21 +42,18 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 response_data = ask_question(qa, prompt)
-                response = response_data["response"]
-                confidence = response_data["confidence"]
+                response = response_data.get("response", "I couldn't generate a response.")
+                confidence = response_data.get("confidence", 0.0)
 
-                if confidence > 0.8:
-                    confidence_text = f"**Confidence Score:** {confidence:.2f} (High Confidence)"
-                    confidence_color = "green"
-                elif confidence > 0.5:
-                    confidence_text = f"**Confidence Score:** {confidence:.2f} (Medium Confidence)"
-                    confidence_color = "orange"
-                else:
-                    confidence_text = f"**Confidence Score:** {confidence:.2f} (Low Confidence - Double Check Output)"
-                    confidence_color = "red"
+                # if confidence > 0.8:
+                #     confidence_text = f"🟢 **Confidence Score:** {confidence:.2f} (High Confidence)"
+                # elif confidence > 0.5:
+                #     confidence_text = f"🟠 **Confidence Score:** {confidence:.2f} (Medium Confidence)"
+                # else:
+                #     confidence_text = f"🔴 **Confidence Score:** {confidence:.2f} (Low Confidence - Double Check Output)"
 
                 st.markdown(response)
-                st.markdown(f"<p style='color:{confidence_color}; font-weight: bold;'>{confidence_text}</p>", unsafe_allow_html=True)
+                st.write(f"**Confidence Score:** {confidence:.2f}")
                 
         message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)
@@ -70,7 +67,8 @@ def get_retriever():
 
 def get_chain():
     ensemble_retriever = get_retriever()
-    chain = create_full_chain(ensemble_retriever, chat_memory=StreamlitChatMessageHistory(key="langchain_messages"))
+    confidence_method = "entropy"
+    chain = create_full_chain(ensemble_retriever, chat_memory=StreamlitChatMessageHistory(key="langchain_messages"), confidence_method=confidence_method)
     return chain
 
 

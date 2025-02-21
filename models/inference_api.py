@@ -18,7 +18,7 @@ from confidence import compute_entropy_confidence, compute_perplexity_confidence
 
 
 def get_model():
-    """Loads the MedLLaMA3-v20 model and tokenizer."""
+    """Loads model and tokenizer"""
     model_name = os.getenv("MODEL_ID")
     
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -30,7 +30,7 @@ def get_model():
 
 
 def generate_response_with_latents(model, tokenizer, input_text, confidence_method="entropy"):
-    """Generates response and extracts latent representation & base confidence."""
+    """Generates response and extracts latent representation & base confidence"""
     inputs = tokenizer(input_text, return_tensors="pt")
 
     with torch.no_grad():
@@ -38,7 +38,8 @@ def generate_response_with_latents(model, tokenizer, input_text, confidence_meth
 
     # Extract last hidden layer
     last_hidden_states = outputs.hidden_states[-1]
-    pooled_embedding = last_hidden_states.mean(dim=1)  # Mean pooling
+    # Mean pool to get sentence-level representation (don't want latent vectors for each token)
+    pooled_embedding = last_hidden_states.mean(dim=1)
 
     # Compute base confidence
     logits = outputs.logits

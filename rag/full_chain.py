@@ -33,7 +33,7 @@ def create_full_chain(retriever, chat_memory=ChatMessageHistory(), confidence_me
 
 def is_ehr_query(query):
     """Determine if the query is related to EHR records."""
-    ehr_keywords = ["patient", "record", "ehr", "diagnosis", "treatment history", "lab results"]
+    ehr_keywords = ["patient", "record", "ehr", "diagnosis", "treatment history", "lab results", "discharge", "visit", "history"]
     
     query_lower = query.lower()
     return any(keyword in query_lower for keyword in ehr_keywords)
