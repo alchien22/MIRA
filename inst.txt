@@ -6,7 +6,8 @@
     V100 GPU: gcloud compute instances create my-gpu-vm --machine-type=n1-standard-8 --accelerator=type=nvidia-tesla-v100,count=1 --image-family=ubuntu-2204-lts --image-project=ubuntu-os-cloud --boot-disk-size=100GB --scopes=https://www.googleapis.com/auth/cloud-platform  --maintenance-policy=TERMINATE  --zone=us-central1-a 
 
 3. Install:
-    sudo apt update && sudo apt install -y nvidia-driver-525
+    sudo apt update && sudo apt install -y nvidia-driver-535
+    sudo systemctl restart nvidia-persistenced
     sudo reboot -> nvidia-smi
     sudo apt update && sudo apt install -y python3 python3-pip git
     sudo apt update && sudo apt install -y python3.10-venv
@@ -15,7 +16,7 @@
     streamlit run streamlit_app.py --server.address 0.0.0.0 --server.port 8501
 
 
-Stop VM: gcloud compute instances stop my-vm --zone=us-central1-b
+Stop VM: gud compute instances stop my-vm --zone=us-central1-b
 Verify Stopped: gcloud compute instances list
     Check if STATUS = TERMINATED
 Resume VM: gcloud compute instances start my-vm --zone=us-central1-b
