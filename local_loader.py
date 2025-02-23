@@ -1,8 +1,5 @@
-import os
 from pathlib import Path
 
-from pypdf import PdfReader
-from langchain.docstore.document import Document
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders.csv_loader import CSVLoader
 
@@ -17,29 +14,17 @@ def load_txt_files(data_dir="./data"):
 
 
 def load_csv_files(data_dir="./data"):
+    """Loads all CSV files and returns documents with metadata."""
     docs = []
     paths = Path(data_dir).glob('**/*.csv')
     for path in paths:
-        loader = CSVLoader(file_path=str(path))
+        print(f"Loading {path}")
+        loader = CSVLoader(
+            file_path=path,
+            csv_args={"delimiter": ",", "quotechar": '"'},
+            metadata_columns=["note_id", "subject_id", "storetime"],
+            content_columns=["text"],
+        )
         docs.extend(loader.load())
-    return docs
-
-
-def get_document_text(uploaded_file, title=None):
-    docs = []
-    fname = uploaded_file.name
-    if not title:
-        title = os.path.basename(fname)
-    if fname.lower().endswith('pdf'):
-        pdf_reader = PdfReader(uploaded_file)
-        for num, page in enumerate(pdf_reader.pages):
-            page = page.extract_text()
-            doc = Document(page_content=page, metadata={'title': title, 'page': (num + 1)})
-            docs.append(doc)
-
-    else:
-        # assume text
-        doc_text = uploaded_file.read().decode()
-        docs.append(doc_text)
 
     return docs

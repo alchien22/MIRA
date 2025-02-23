@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
-from ensemble import ensemble_retriever_from_docs
+from vector_store import VectorStore
 from full_chain import create_full_chain, ask_question
-from local_loader import load_txt_files
+from local_loader import load_csv_files
 
 load_dotenv()
 
@@ -21,7 +21,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
     )
 
-def show_ui(qa, prompt_to_user="How may I help you?"):
+def show_ui(qa, retriever, prompt_to_user="How may I help you?"):
     if "messages" not in st.session_state.keys():
         st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
 
@@ -40,26 +40,39 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
     if st.session_state.messages[-1]["role"] != "assistant":
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
-                response_data = ask_question(qa, prompt)
+                response_data = ask_question(qa, prompt, retriever)
+
                 response = response_data.get("response", "I couldn't generate a response.")
+                st.markdown(response.content)
+
+                evidence = response_data.get("docs", [])
+                with st.expander("View Evidence"):
+                    for i, doc in enumerate(evidence):
+                        st.markdown(f"### Document {i+1}")
+                        st.code(doc.page_content, language="plaintext")
+                        st.caption(f"**Note ID:** {doc.metadata['note_id']} | **Source:** {doc.metadata['source']}")
+                        st.divider()
+
                 confidence = response_data.get("confidence", 0.0)
-                st.markdown(response)
                 st.write(f"**Confidence Score:** {confidence:.2f}")
                 
-        message = {"role": "assistant", "content": response}
+        message = {"role": "assistant", "content": response.content}
         st.session_state.messages.append(message)
 
 
 @st.cache_resource
 def get_retriever():
-    docs = load_txt_files()
-    return ensemble_retriever_from_docs(docs)
+    vector_store = VectorStore()
+    docs = load_csv_files()
+    vector_store.create_vector_db(docs)
+    
+    return vector_store.get_retriever()
 
 
 def get_chain():
-    ensemble_retriever = get_retriever()
-    chain = create_full_chain(ensemble_retriever, chat_memory=StreamlitChatMessageHistory(key="langchain_messages"))
-    return chain
+    retriever = get_retriever()
+    chain = create_full_chain(chat_memory=StreamlitChatMessageHistory(key="langchain_messages"))
+    return chain, retriever
 
 
 def get_secret_or_input():
@@ -81,14 +94,11 @@ def run():
         ready = False
 
     if ready:
-        chain = get_chain()
-
-        with st.sidebar:
-            st.metric("Confidence", "High", "99%") # TODO: Write function that updates this
+        chain, retriever = get_chain()
 
         st.title("Hi, I am MIRA! Your EHR Assistant🤖")
         st.subheader("Ask me about a patient's medical history!")
-        show_ui(chain, "What would you like to know?")
+        show_ui(chain, retriever, "What would you like to know?")
 
     else:
         st.stop()

@@ -8,4 +8,4 @@ __pycache__/
 store/
 EHRNoteQA/
 discharge_notes/
-discharge.csv
+data/
