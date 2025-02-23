@@ -12,9 +12,10 @@ def get_model():
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
         model_name, 
-        device_map="auto", 
+        device_map={"": 0}, 
         quantization_config=quant_config, 
-        output_hidden_states=True
+        output_hidden_states=True,
+        return_dict_in_generate=True
     )
     
     model.eval()
@@ -23,6 +24,9 @@ def get_model():
 
 def generate_response_with_latents(model, tokenizer, input_text, confidence_method="entropy"):
     """Generates response and extracts latent representation & base confidence"""
+    if not isinstance(input_text, str):
+        input_text = str(input_text)
+
     inputs = tokenizer(input_text, return_tensors="pt").to("cuda")
 
     with torch.no_grad():

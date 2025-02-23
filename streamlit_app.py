@@ -11,7 +11,7 @@ from retrieval.local_loader import load_txt_files
 
 load_dotenv()
 
-MODEL_ID = "ProbeMedicalYonseiMAILab/medllama3-v20"
+MODEL_ID = "BioMistral/BioMistral-7B"
 os.environ["MODEL_ID"] = MODEL_ID
 
 st.set_page_config(
@@ -44,13 +44,6 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
                 response_data = ask_question(qa, prompt)
                 response = response_data.get("response", "I couldn't generate a response.")
                 confidence = response_data.get("confidence", 0.0)
-
-                # if confidence > 0.8:
-                #     confidence_text = f"🟢 **Confidence Score:** {confidence:.2f} (High Confidence)"
-                # elif confidence > 0.5:
-                #     confidence_text = f"🟠 **Confidence Score:** {confidence:.2f} (Medium Confidence)"
-                # else:
-                #     confidence_text = f"🔴 **Confidence Score:** {confidence:.2f} (Low Confidence - Double Check Output)"
 
                 st.markdown(response)
                 st.write(f"**Confidence Score:** {confidence:.2f}")

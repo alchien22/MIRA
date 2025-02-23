@@ -41,11 +41,15 @@ def is_ehr_query(query):
 
 def ask_question(chain, query):
     use_rag = is_ehr_query(query)
+    print('processing question')
+
+    query = str(query)
 
     response_data = chain.invoke(
         {"question": query, "use_rag": use_rag},
         config={"configurable": {"session_id": "foo"}}
     )
+
     if "response" in response_data and "confidence" in response_data:
         return response_data
 

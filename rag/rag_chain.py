@@ -36,6 +36,7 @@ def make_rag_chain(model, retriever, rag_prompt, tokenizer, confidence_method="e
     Returns:
         Chain: The RAG chain.
     """
+    print('creating rag chain')
     def retrieve_with_confidence(input):
         query = get_question(input)
 
@@ -59,12 +60,6 @@ def make_rag_chain(model, retriever, rag_prompt, tokenizer, confidence_method="e
 
         return {"response": response, "confidence": confidence_score}
     
-    rag_chain = (
-            {
-                "context": RunnableLambda(get_question) | retriever | format_docs,
-                "question": RunnablePassthrough()
-            }
-            | RunnableLambda(retrieve_with_confidence)
-    )
+    rag_chain = RunnableLambda(retrieve_with_confidence)
 
     return rag_chain

@@ -70,7 +70,7 @@ def batch_extract_latents(model, tokenizer, texts, confidence_method="entropy"):
 
     with torch.no_grad():
         # Forward pass through the model (without generating output tokens)
-        outputs = model(**inputs, output_hidden_states=True, return_dict=True)
+        outputs = model(**inputs, output_hidden_states=True, return_dict_in_generate=True)
 
     # Extract last hidden layer
     last_hidden_states = outputs.hidden_states[-1]  # Shape: (batch_size, seq_len, hidden_dim)
