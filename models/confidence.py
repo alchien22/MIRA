@@ -22,7 +22,7 @@ def compute_confidence_score(response_latents, retrieved_latents, base_confidenc
     return lambda_weight * base_confidence + (1 - lambda_weight) * retrieval_confidence
 
 
-def compute_entropy_confidence(logits_list, max_entropy=5):
+def compute_entropy_confidence(logits_list, max_entropy=10):
     """Computes base confidence based on entropy (lower = higher confidence)"""
     entropies = []
     for scores in logits_list:

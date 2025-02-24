@@ -34,7 +34,10 @@ Question:
     """
 
     chat = [
-        {"role": "system", "content": "You are a medical expert AI assistant called MIRA. Provide concise responses."},
+        {"role": "system", "content": (
+            "You are a medical expert AI assistant called MIRA. "
+            "Provide short and concise responses in under 200 tokens.")
+        },
         {
             "role": "user", 
             "context": "{context}",
