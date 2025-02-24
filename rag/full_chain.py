@@ -1,38 +1,51 @@
-from langchain.memory import ChatMessageHistory
+from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate
 
 from models.inference_api import get_model
-from .memory import create_memory_chain
 from .rag_chain import make_rag_chain
-
 
 def create_full_chain(retriever, chat_memory=ChatMessageHistory(), confidence_method="entropy"):
     model, tokenizer = get_model()
-    
-    system_prompt = """You are a medical expert AI assistant called MIRA.
-    
-    Use the following context and the users' chat history to help the user:
-    If you don't know the answer, just say that you don't know. 
-    
-    Context: {context}
-    
-    Question: """
+    tokenizer.chat_template = """
+{% for message in messages %}
+{% if loop.first %}
+<|begin_of_text|>
+{% endif %}
+{% if message['role'] == 'system' %}
+<|start_header_id|>system<|end_header_id|>
+{{ message['content'] }}<|eot_id|>
+{% elif message['role'] == 'user' %}
+<|start_header_id|>user<|end_header_id|>
+{% if message['context'] %}
+Context:
+{{ message['context'] }}
+{% endif %}
 
-    prompt = ChatPromptTemplate.from_messages(
-        [
-            ("system", system_prompt),
-            ("human", "{question}"),
-        ]
-    )
+Question:
+{{ message['content'] }}<|eot_id|>
+{% elif message['role'] == 'assistant' %}
+<|start_header_id|>assistant<|end_header_id|>
+{{ message['content'] }}<|eot_id|>
+{% endif %}
+{% if loop.last and add_generation_prompt %}
+<|start_header_id|>assistant<|end_header_id|>
+{% endif %}
+{% endfor %}
+    """
 
-    rag_chain = make_rag_chain(model, retriever, rag_prompt=prompt, tokenizer=tokenizer, confidence_method=confidence_method)
-    chain = create_memory_chain(model, rag_chain, chat_memory)
-    
-    return chain
+    chat = [
+        {"role": "system", "content": "You are a medical expert AI assistant called MIRA. Provide concise responses."},
+        {
+            "role": "user", 
+            "context": "{context}",
+            "content": "{question}"
+        }
+    ]
+    prompt = tokenizer.apply_chat_template(chat, add_generation_prompt=True, tokenize=False)
+    return make_rag_chain(model, retriever, rag_prompt=prompt, tokenizer=tokenizer, confidence_method=confidence_method)
 
 
 def is_ehr_query(query):
-    """Determine if the query is related to EHR records."""
     ehr_keywords = ["patient", "record", "ehr", "diagnosis", "treatment history", "lab results", "discharge", "visit", "history"]
     
     query_lower = query.lower()
@@ -40,17 +53,19 @@ def is_ehr_query(query):
 
 
 def ask_question(chain, query):
+    print(f"Debug: ask_question received query = {query}", flush=True)
+
     use_rag = is_ehr_query(query)
-    print('processing question')
+    print(f"Debug: use_rag = {use_rag}", flush=True)
 
-    query = str(query)
+    try:
+        response_data = chain.invoke({"question": query, "use_rag": use_rag}, config={"configurable": {"session_id": "foo"}})
+        print(f"Debug: Response data received = {response_data}", flush=True)
+    except Exception as e:
+        print(f"ERROR during chain.invoke(): {e}", flush=True)
+        raise
 
-    response_data = chain.invoke(
-        {"question": query, "use_rag": use_rag},
-        config={"configurable": {"session_id": "foo"}}
-    )
+    return response_data
 
-    if "response" in response_data and "confidence" in response_data:
-        return response_data
-
-    return {"response": str(response_data), "confidence": 0.0}
+# from .memory import create_memory_chain
+# chain = create_memory_chain(model, rag_chain, chat_memory)

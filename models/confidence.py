@@ -9,7 +9,6 @@ def compute_confidence_score(response_latents, retrieved_latents, base_confidenc
     if not use_rag:
         return base_confidence
 
-    # Compute retrieval confidence
     retrieved_matrix = np.array(retrieved_latents)
     response_vector =  np.array(response_latents).reshape(1, -1)
     similarities = cosine_similarity(response_vector, retrieved_matrix)
@@ -20,17 +19,20 @@ def compute_confidence_score(response_latents, retrieved_latents, base_confidenc
     # lambda_weight = compute_dynamic_lambda(retrieved_latents, response_latents)
     lambda_weight = 0.5
 
-    # Composite confidence score
-    final_confidence = lambda_weight * base_confidence + (1 - lambda_weight) * retrieval_confidence
-    return final_confidence
+    return lambda_weight * base_confidence + (1 - lambda_weight) * retrieval_confidence
 
 
-def compute_entropy_confidence(logits, max_entropy=5):
+def compute_entropy_confidence(logits_list, max_entropy=5):
     """Computes base confidence based on entropy (lower = higher confidence)"""
-    probs = torch.nn.functional.softmax(logits, dim=-1)
-    log_probs = torch.log(probs + 1e-9)
-    entropy = -torch.sum(probs * log_probs, dim=-1).mean().item()
-    base_confidence = 1 - (entropy / max_entropy)
+    entropies = []
+    for scores in logits_list:
+        probs = torch.softmax(scores, dim=-1)
+        log_probs = torch.log(probs + 1e-9)
+        entropy = -torch.sum(probs * log_probs, dim=-1).mean().item()
+        entropies.append(entropy)
+
+    avg_entropy = sum(entropies) / len(entropies)
+    base_confidence = 1 - (avg_entropy / max_entropy)
     return base_confidence
 
 
@@ -43,18 +45,18 @@ def compute_perplexity_confidence(logits):
     return max(0.0, min(1.0, base_confidence))
 
 
-def compute_dynamic_lambda(retrieved_latents, response_latents):
-    """Dynamically adjust lambda based on retrieval quality."""
-    if not retrieved_latents:
-        return 1.0
-    retrieved_matrix = np.array(retrieved_latents)
-    response_vector = np.array(response_latents).reshape(1, -1)
-    similarities = cosine_similarity(response_vector, retrieved_matrix)
+# def compute_dynamic_lambda(retrieved_latents, response_latents):
+#     """Dynamically adjust lambda based on retrieval quality."""
+#     if not retrieved_latents:
+#         return 1.0
+#     retrieved_matrix = np.array(retrieved_latents)
+#     response_vector = np.array(response_latents).reshape(1, -1)
+#     similarities = cosine_similarity(response_vector, retrieved_matrix)
 
-    retrieval_strength = np.mean(similarities)  # Mean similarity score
-    lambda_dynamic = 1 / (1 + retrieval_strength)  # Inverse scaling
+#     retrieval_strength = np.mean(similarities)  # Mean similarity score
+#     lambda_dynamic = 1 / (1 + retrieval_strength)  # Inverse scaling
 
-    return max(0.2, min(0.8, lambda_dynamic))  # Keep λ within [0.2, 0.8]
+#     return max(0.2, min(0.8, lambda_dynamic))  # Keep λ within [0.2, 0.8]
 
 
 def batch_extract_latents(model, tokenizer, texts, confidence_method="entropy"):
@@ -66,11 +68,11 @@ def batch_extract_latents(model, tokenizer, texts, confidence_method="entropy"):
         texts = [texts]
 
     # Tokenize all texts together (batch processing)
-    inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
+    inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True).to("cuda")
 
     with torch.no_grad():
         # Forward pass through the model (without generating output tokens)
-        outputs = model(**inputs, output_hidden_states=True, return_dict_in_generate=True)
+        outputs = model(**inputs, output_hidden_states=True, return_dict=True)
 
     # Extract last hidden layer
     last_hidden_states = outputs.hidden_states[-1]  # Shape: (batch_size, seq_len, hidden_dim)

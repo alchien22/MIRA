@@ -11,7 +11,7 @@ from retrieval.local_loader import load_txt_files
 
 load_dotenv()
 
-MODEL_ID = "BioMistral/BioMistral-7B"
+MODEL_ID = "johnsnowlabs/JSL-MedLlama-3-8B-v2.0"
 os.environ["MODEL_ID"] = MODEL_ID
 
 st.set_page_config(
@@ -20,9 +20,9 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="collapsed"
     )
-st.title("Hi, I am MIRA! Your EHR Assistant 🩺🤖")
+st.title("MIRA 🩺🤖")
 
-def show_ui(qa, prompt_to_user="How may I help you?"):
+def show_ui(qa, prompt_to_user="How may I help you today?"):
     if "messages" not in st.session_state.keys():
         st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
 
@@ -51,25 +51,22 @@ def show_ui(qa, prompt_to_user="How may I help you?"):
         message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)
 
-
 @st.cache_resource
 def get_retriever():
     docs = load_txt_files()
     return ensemble_retriever_from_docs(docs)
-
 
 def get_chain():
     ensemble_retriever = get_retriever()
     chain = create_full_chain(ensemble_retriever, chat_memory=StreamlitChatMessageHistory(key="langchain_messages"), confidence_method="entropy")
     return chain
 
-
 def run():
     if "langchain_messages" not in st.session_state:
         st.session_state["langchain_messages"] = []
-        
+          
     chain = get_chain()
     st.subheader("Ask me anything about a patient's medical history, symptoms, or treatment!")
-    show_ui(chain, "What would you like to know?")
+    show_ui(chain, "Hi, I'm MIRA, your personal medical assistant! What would you like to know?")
 
 run()
