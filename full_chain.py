@@ -110,5 +110,7 @@ def ask_question(chain, query, retriever):
     # random confidence score
     conf = random.uniform(0.5, 1.0)
 
+    print(docs)
+
     return {"response": response_data, "docs": docs, "confidence": conf} # TODO: Make confidence score more meaningful
 

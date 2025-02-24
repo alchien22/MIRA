@@ -34,7 +34,7 @@ class EmbeddingProxy:
 class VectorStore:
     def __init__(self, collection_name="EHRData"):
         self.collection_name = collection_name
-        self.text_data = None
+        self.data = None    # Data in text form
         self.vector_store = None
 
     def create_vector_db(self, data):
@@ -43,12 +43,14 @@ class VectorStore:
         if not data:
             logging.warning("Empty data passed in to create vector database")
 
-        self.text_data = data
         proxy_embeddings = EmbeddingProxy(embeddings)
 
         # Split the documents into more managable chunks
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         data = text_splitter.split_documents(data)
+
+        # Store the data in text form
+        self.data = data
 
         # Create a new Chroma database locally
         vector_store = Chroma(
@@ -74,8 +76,8 @@ class VectorStore:
             }
         )
 
-        bm25_retriever = BM25Retriever.from_texts(
-            texts=[doc.page_content for doc in self.text_data],
+        bm25_retriever = BM25Retriever.from_documents(
+            self.data,
             search_kwargs={
                 "k": 5,
                 "filter": {

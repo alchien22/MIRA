@@ -46,11 +46,15 @@ def show_ui(qa, retriever, prompt_to_user="How may I help you?"):
                 st.markdown(response.content)
 
                 evidence = response_data.get("docs", [])
+
+                # Display evidence. Remove this and confidence for 1 scenario run
                 with st.expander("View Evidence"):
                     for i, doc in enumerate(evidence):
                         st.markdown(f"### Document {i+1}")
                         st.code(doc.page_content, language="plaintext")
-                        st.caption(f"**Note ID:** {doc.metadata['note_id']} | **Source:** {doc.metadata['source']}")
+                        st.code(f"Note ID: {doc.metadata['note_id']}", language="json")
+                        st.code(f"Source: {doc.metadata['source']}", language="json")
+
                         st.divider()
 
                 confidence = response_data.get("confidence", 0.0)
