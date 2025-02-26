@@ -10,7 +10,11 @@ def compute_confidence_score(response_latents, retrieved_latents, base_confidenc
         return base_confidence
 
     retrieved_matrix = np.array(retrieved_latents)
-    response_vector =  np.array(response_latents).reshape(1, -1)
+    response_vector = np.array(response_latents)
+
+    retrieved_matrix = retrieved_matrix.reshape(1, -1)
+    response_vector = response_vector.reshape(1, -1)
+
     similarities = cosine_similarity(response_vector, retrieved_matrix)
 
     # Rescale cosine similarity ([-1,1] -> [0,1])

@@ -48,17 +48,15 @@ def show_ui(qa, retriever, prompt_to_user="How may I help you today?"):
                 st.markdown(response)
                 st.write(f"**Confidence:** {confidence:.2f}")
 
-                evidence = response.get("docs", '')
-                # Display evidence. Remove this and confidence for 1 scenario run
+                evidence = response_data.get("docs", [])
                 if evidence:
                     with st.expander("View Evidence"):
-                        for i, doc in enumerate(evidence):
-                            st.markdown(f"### Document {i+1}")
-                            st.code(doc.page_content, language="plaintext")
-                            st.code(f"Note ID: {doc.metadata['note_id']}", language="json")
-                            st.code(f"Source: {doc.metadata['source']}", language="json")
-
-                            st.divider()
+                    for i, doc in enumerate(evidence):
+                        st.markdown(f"### Document {i+1}")
+                        st.code(doc.page_content, language="plaintext")
+                        st.code(f"Note ID: {doc.metadata['note_id']}", language="json")
+                        st.code(f"Source: {doc.metadata['source']}", language="json")
+                        st.divider()
                 
         message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)

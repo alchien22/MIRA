@@ -3,7 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.messages.base import BaseMessage
 
-from models.inference_api import get_model, generate_response_with_latents
+from models.inference_api import get_model
 from models.confidence import compute_confidence_score
 
 import torch
@@ -94,7 +94,8 @@ Question:
     chat = [
         {"role": "system", "content": (
             "You are a medical expert AI assistant called MIRA. "
-            "Provide short and concise responses in under 200 tokens.")
+            "Provide short and concise responses in under 200 tokens. "
+            "When asked about a patient's medical records, you should provide a response based on the information given below.")
         },
         {
             "role": "user", 
@@ -107,8 +108,7 @@ Question:
 
 
 def is_ehr_query(query):
-    ehr_keywords = ["ehr", "history", "record", "patient"]
-    
+    ehr_keywords = ["ehr", "history", "record", "patient", "visit", "discharge"]
     query_lower = query.lower()
     return any(keyword in query_lower for keyword in ehr_keywords)
 
@@ -117,7 +117,7 @@ def ask_question(chain, retriever, query):
     print(f"Debug: ask_question received query = {query}", flush=True)
 
     use_rag = is_ehr_query(query)
-    evidence = ''
+    evidence = []
     
     if use_rag:
         print('Retrieving')
