@@ -30,6 +30,26 @@ def get_question(input):
         return input.content
     else:
         raise Exception("string or dict with 'question' key expected as RAG chain input.")
+    
+
+def remove_duplicates(documents):
+    """ Removes duplicate documents from a list of documents.
+    
+    Args: 
+        documents (List[Document]): The list of documents to remove duplicates from.
+
+    Returns:
+        List[Document]: The list of unique documents.
+    """
+
+    seen = set()
+    unique_docs = []
+    for doc in documents:
+        if doc.page_content not in seen:
+            unique_docs.append(doc)
+            seen.add(doc.page_content)
+            
+    return unique_docs
 
 
 def make_rag_chain(model, rag_prompt):
@@ -91,6 +111,9 @@ def ask_question(chain, query, retriever):
         {"response": str, "docs": List[Document], "confidence": float}: The response, the retrieved documents along with metadata, and the confidence score.
     """
     docs = retriever.invoke(query)
+
+    # remove repeated docs if any
+    docs = remove_duplicates(docs)
 
     if not docs:
         return {"response": "I couldn't find any relevant documents."}
