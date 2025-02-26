@@ -22,7 +22,7 @@ st.set_page_config(
     )
 st.title("MIRA 🩺🤖")
 
-def show_ui(qa, prompt_to_user="How may I help you today?"):
+def show_ui(qa, retriever, prompt_to_user="How may I help you today?"):
     if "messages" not in st.session_state.keys():
         st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
 
@@ -41,32 +41,80 @@ def show_ui(qa, prompt_to_user="How may I help you today?"):
     if st.session_state.messages[-1]["role"] != "assistant":
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
-                response_data = ask_question(qa, prompt)
+                response_data = ask_question(qa, retriever, prompt)
                 response = response_data.get("response", "I couldn't generate a response.")
                 confidence = response_data.get("confidence", 0.0)
 
                 st.markdown(response)
-                st.write(f"**Confidence Score:** {confidence:.2f}")
+                st.write(f"**Confidence:** {confidence:.2f}")
+
+                evidence = response.get("docs", '')
+                # Display evidence. Remove this and confidence for 1 scenario run
+                if evidence:
+                    with st.expander("View Evidence"):
+                        for i, doc in enumerate(evidence):
+                            st.markdown(f"### Document {i+1}")
+                            st.code(doc.page_content, language="plaintext")
+                            st.code(f"Note ID: {doc.metadata['note_id']}", language="json")
+                            st.code(f"Source: {doc.metadata['source']}", language="json")
+
+                            st.divider()
                 
         message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)
 
+
 @st.cache_resource
 def get_retriever():
-    docs = load_txt_files()
-    return ensemble_retriever_from_docs(docs)
+    vector_store = VectorStore()
+    docs = load_csv_files()
+    vector_store.create_vector_db(docs)
+    return vector_store.get_retriever()
+
 
 def get_chain():
     ensemble_retriever = get_retriever()
     chain = create_full_chain(ensemble_retriever, chat_memory=StreamlitChatMessageHistory(key="langchain_messages"), confidence_method="entropy")
-    return chain
+    return chain, retriever
+
+
+def get_secret_or_input():
+    if 'HUGGINGFACEHUB_API_TOKEN' in st.secrets:
+        secret_value = st.secrets['HUGGINGFACEHUB_API_TOKEN']
+    return secret_value
+
 
 def run():
-    if "langchain_messages" not in st.session_state:
-        st.session_state["langchain_messages"] = []
-          
-    chain = get_chain()
-    st.subheader("Ask me anything about a patient's medical history, symptoms, or treatment!")
-    show_ui(chain, "Hi, I'm MIRA, your personal medical assistant! What would you like to know?")
+    local = True
+
+    if local:
+        if "langchain_messages" not in st.session_state:
+            st.session_state["langchain_messages"] = []
+            
+        chain, retriever = get_chain()
+        st.subheader("Ask me anything about a patient's medical history, symptoms, or treatment!")
+        show_ui(chain, retriever, "Hi, I'm MIRA, your personal medical assistant! What would you like to know?")
+    
+    else:
+        ready = True
+
+        huggingfacehub_api_token = st.session_state.get("HUGGINGFACEHUB_API_TOKEN")
+        
+        if not huggingfacehub_api_token:
+            huggingfacehub_api_token = get_secret_or_input()
+
+        if not huggingfacehub_api_token:
+            st.warning("Missing HUGGINGFACEHUB_API_TOKEN")
+            ready = False
+
+        if ready:
+            chain, retriever = get_chain()
+
+            st.title("Hi, I am MIRA! Your EHR Assistant🤖")
+            st.subheader("Ask me about a patient's medical history!")
+            show_ui(chain, retriever, "What would you like to know?")
+
+        else:
+            st.stop()
 
 run()

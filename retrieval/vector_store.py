@@ -6,6 +6,9 @@ from time import sleep
 
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.retrievers import BM25Retriever
+from langchain.retrievers import EnsembleRetriever
 
 EMBED_DELAY = 0.02  # 20 milliseconds
 
@@ -27,25 +30,63 @@ class EmbeddingProxy:
         sleep(EMBED_DELAY)
         return self.embedding.embed_query(text)
     
+# Vector store class to create a Chroma database with embeddings and methods for retrieval
+class VectorStore:
+    def __init__(self, collection_name="EHRData"):
+        self.collection_name = collection_name
+        self.data = None    # Data in text form
+        self.vector_store = None
 
-# This happens all at once, not ideal for large datasets.
-def create_vector_db(texts, embeddings=None, collection_name="chroma"):
-    if not texts:
-        logging.warning("Empty texts passed in to create vector database")
-    if not embeddings:
+    def create_vector_db(self, data):
+        print("Creating vector database")
         embeddings = HuggingFaceEmbeddings(model_name=model_name, model_kwargs=model_kwargs,encode_kwargs=encode_kwargs)
-    proxy_embeddings = EmbeddingProxy(embeddings)
+        if not data:
+            logging.warning("Empty data passed in to create vector database")
 
-    # Create a ChromaDB vectorstore from documents
-    # this will be a chroma collection with a default name.
-    db = Chroma(collection_name=collection_name,
+        proxy_embeddings = EmbeddingProxy(embeddings)
+
+        # Split the documents into more managable chunks
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        data = text_splitter.split_documents(data)
+
+        # Store the data in text form
+        self.data = data
+
+        # Create a new Chroma database locally
+        vector_store = Chroma(
+                collection_name=self.collection_name,
                 embedding_function=proxy_embeddings,
-                persist_directory=os.path.join("store/", collection_name))
-    
-    db.add_documents(texts)
+                persist_directory=os.path.join("store/", self.collection_name)
+            )
+        
+        vector_store.add_documents(documents=data, ids=[str(i) for i in range(len(data))])
 
-    return db
+        self.vector_store = vector_store
+        print("Vector database created")
 
-def find_similar(vs, query):
-    docs = vs.similarity_search(query)
-    return docs
+    def get_retriever(self):
+        """Initializes an ensemble retriever with BM25 and vector store retrievers."""
+        vs_retriever = self.vector_store.as_retriever(
+            search_type="similarity",
+            search_kwargs={
+                "k": 5,
+                "filter": {
+                    'subject_id': '10000032'
+                }
+            }
+        )
+
+        bm25_retriever = BM25Retriever.from_documents(
+            self.data,
+            search_kwargs={
+                "k": 5,
+                "filter": {
+                    'subject_id': '10000032'
+                }
+            }
+        )
+
+        return EnsembleRetriever(
+            retrievers=[vs_retriever, bm25_retriever],
+            weights=[0.5, 0.5]
+        )

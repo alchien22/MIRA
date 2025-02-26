@@ -35,9 +35,7 @@ def generate_response_with_latents(model, tokenizer, input_text, confidence_meth
     with torch.no_grad():
         output = model.generate(
             **inputs, 
-            max_new_tokens=200, 
-            temperature=0.3,
-            do_sample=True,
+            max_new_tokens=200,
             return_dict_in_generate=True,
             output_hidden_states=True,
             output_scores=True,
