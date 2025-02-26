@@ -23,6 +23,8 @@ def compute_confidence_score(response_latents, retrieved_latents, base_confidenc
     # lambda_weight = compute_dynamic_lambda(retrieved_latents, response_latents)
     lambda_weight = 0.5
 
+    print(f'Base confidence: {base_confidence}')
+    print(f'Retrieval confidence: {retrieval_confidence}')
     return lambda_weight * base_confidence + (1 - lambda_weight) * retrieval_confidence
 
 
