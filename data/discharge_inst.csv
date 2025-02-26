@@ -1,0 +1,25 @@
+note_id,subject_id,hadm_id,note_type,note_seq,charttime,storetime,text
+10000032-DS-24,10000032,25742920,DS,24,2180-08-07 00:00:00,2180-08-10 05:43:00," 
+Discharge Instructions:
+Dear Ms. ___,
+
+It was a pleasure caring for you during your stay at ___. You 
+were admitted because of worsening abdominal pain. It is likely 
+that this pain was due to increasing fluid in the abdomen from 
+your cirrhosis. After a paracentesis in which much of this fluid 
+was removed, your pain improved significantly. You were noted to 
+have a high potassium during your hospitalization, which came 
+down with treatment but this should continue to be followed as 
+an outpatient. You also emphasized your desire to speak with a 
+representative from hospice. Because of your repeated 
+paracenteses, we also discussed the possibility of a pleurex 
+catheter placement. We arranged for you to meet with hospice 
+coordinators, and you will be discharged home with hospice.
+
+We wish you all the best!
+
+Your ___ care team
+ 
+Followup Instructions:
+___
+"

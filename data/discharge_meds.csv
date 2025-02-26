@@ -1,0 +1,20 @@
+note_id,subject_id,hadm_id,note_type,note_seq,charttime,storetime,text
+10000032-DS-24,10000032,25742920,DS,24,2180-08-07 00:00:00,2180-08-10 05:43:00," 
+Discharge Medications:
+1. albuterol sulfate 90 mcg/actuation inhalation Q6H:PRN 
+Wheezing 
+2. Calcium Carbonate 500 mg PO BID 
+3. Emtricitabine-Tenofovir (Truvada) 1 TAB PO DAILY 
+4. Fluticasone Propionate 110mcg 1 PUFF IH BID 
+5. Lactulose 30 mL PO TID 
+6. Raltegravir 400 mg PO BID 
+7. Rifaximin 550 mg PO BID 
+8. Tiotropium Bromide 1 CAP IH DAILY 
+9. TraMADOL (Ultram) ___ mg PO Q6H:PRN pain 
+10. Furosemide 10 mg PO DAILY 
+RX *furosemide 20 mg 0.5 (One half) tablet(s) by mouth Please 
+take 1 tablet daily. Disp #*15 Tablet Refills:*0
+11. Outpatient Lab Work
+Please obtain biweekly BMP to monitor K and Na. Please fax 
+results to Dr. ___ at the ___ at ___.
+"

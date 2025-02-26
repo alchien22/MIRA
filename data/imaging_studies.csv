@@ -1,0 +1,11 @@
+note_id,subject_id,hadm_id,note_type,note_seq,charttime,storetime,text
+10000032-DS-24,10000032,25742920,DS,24,2180-08-07 00:00:00,2180-08-10 05:43:00," 
+IMAGING/STUDIES
+===============
+CXR ___
+No acute cardiopulmonary process.
+
+RUQUS ___
+Cirrhotic, mild splenomegaly and ascites.  A solid 3cm nodule in 
+the left lobe of the liver is stable in size and appearance. 
+"

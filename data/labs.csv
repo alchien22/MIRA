@@ -1,0 +1,20 @@
+note_id,subject_id,hadm_id,note_type,note_seq,charttime,storetime,text
+10000032-DS-24,10000032,25742920,DS,24,2180-08-07 00:00:00,2180-08-10 05:43:00," 
+ADMISSION LABS
+==============
+___ 09:20PM BLOOD WBC-8.2# RBC-3.48* Hgb-12.3 Hct-36.7 
+MCV-106* MCH-35.5* MCHC-33.6 RDW-16.5* Plt ___
+___ 09:28PM BLOOD ___ PTT-31.8 ___
+___ 09:20PM BLOOD Glucose-118* UreaN-33* Creat-0.6 Na-127* 
+K-5.3* Cl-97 HCO3-24 AnGap-11
+___ 09:20PM BLOOD ALT-135* AST-244* AlkPhos-123* 
+TotBili-1.3
+___ 09:20PM BLOOD Albumin-3.5 Calcium-8.3* Phos-3.3 Mg-2.3
+___ 09:27PM BLOOD Lactate-2.1*
+
+NOTABLE LABS
+============
+___ 12:30AM ASCITES WBC-220* ___ Polys-17* 
+Lymphs-48* Monos-19* Mesothe-2* Macroph-12* Other-2*
+___ 12:30AM ASCITES TotPro-0.7 Glucose-129
+"

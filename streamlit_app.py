@@ -24,12 +24,14 @@ st.title("MIRA 🩺🤖")
 
 def show_ui(qa, retriever, prompt_to_user="How may I help you today?"):
     if "messages" not in st.session_state.keys():
-        st.session_state.messages = [{"role": "assistant", "content": prompt_to_user}]
+        st.session_state.messages = [{"role": "assistant", "content": prompt_to_user, "confidence": None}]
 
     # Display chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
+            if "confidence" in message and message["confidence"] is not None:
+                st.write(f"**Confidence:** {message['confidence']:.2f}")
 
     # User-provided prompt
     if prompt := st.chat_input():
@@ -51,14 +53,14 @@ def show_ui(qa, retriever, prompt_to_user="How may I help you today?"):
                 evidence = response_data.get("docs", [])
                 if evidence:
                     with st.expander("View Evidence"):
-                    for i, doc in enumerate(evidence):
-                        st.markdown(f"### Document {i+1}")
-                        st.code(doc.page_content, language="plaintext")
-                        st.code(f"Note ID: {doc.metadata['note_id']}", language="json")
-                        st.code(f"Source: {doc.metadata['source']}", language="json")
-                        st.divider()
+                        for i, doc in enumerate(evidence):
+                            st.markdown(f"### Document {i+1}")
+                            st.code(doc.page_content, language="plaintext")
+                            st.code(f"Note ID: {doc.metadata['note_id']}", language="json")
+                            st.code(f"Source: {doc.metadata['source']}", language="json")
+                            st.divider()
                 
-        message = {"role": "assistant", "content": response}
+        message = {"role": "assistant", "content": response, "confidence": confidence}
         st.session_state.messages.append(message)
 
 

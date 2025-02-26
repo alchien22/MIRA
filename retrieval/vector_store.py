@@ -8,7 +8,8 @@ from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.retrievers import BM25Retriever
-from langchain.retrievers import EnsembleRetriever
+from langchain.retrievers.ensemble import EnsembleRetriever
+from pydantic import ConfigDict, Field
 
 EMBED_DELAY = 0.02  # 20 milliseconds
 
@@ -29,6 +30,20 @@ class EmbeddingProxy:
     def embed_query(self, text: str) -> List[float]:
         sleep(EMBED_DELAY)
         return self.embedding.embed_query(text)
+
+
+class LimitedEnsembleRetriever(EnsembleRetriever):
+    limit: int = Field(default=1)
+    model_config = ConfigDict(extra="allow")
+
+    def __init__(self, limit=1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.limit = limit
+
+    def invoke(self, query: str, **kwargs):
+        docs = super().invoke(query, **kwargs)
+        return docs[:self.limit]
+
     
 # Vector store class to create a Chroma database with embeddings and methods for retrieval
 class VectorStore:
@@ -69,7 +84,7 @@ class VectorStore:
         vs_retriever = self.vector_store.as_retriever(
             search_type="similarity",
             search_kwargs={
-                "k": 5,
+                "k": 1,
                 "filter": {
                     'subject_id': '10000032'
                 }
@@ -79,14 +94,15 @@ class VectorStore:
         bm25_retriever = BM25Retriever.from_documents(
             self.data,
             search_kwargs={
-                "k": 5,
+                "k": 1,
                 "filter": {
                     'subject_id': '10000032'
                 }
             }
         )
 
-        return EnsembleRetriever(
+        return LimitedEnsembleRetriever(
             retrievers=[vs_retriever, bm25_retriever],
-            weights=[0.5, 0.5]
+            weights=[0.5, 0.5],
+            limit=1
         )

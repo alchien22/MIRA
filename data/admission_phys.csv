@@ -1,0 +1,20 @@
+note_id,subject_id,hadm_id,note_type,note_seq,charttime,storetime,text
+10000032-DS-24,10000032,25742920,DS,24,2180-08-07 00:00:00,2180-08-10 05:43:00," 
+ADMISSION PHYSICAL EXAM
+=======================
+Vitals - T 97, BP 98/65, HR 103, RR 18, O2 94RA, Glucose 128.  
+GENERAL: NAD, lying on her right side.
+HEENT: AT/NC, EOMI, PERRL, anicteric sclera, pink conjunctiva, 
+MMM, good dentition  
+NECK: nontender supple neck, no LAD, no JVD  
+CARDIAC: RRR, S1/S2, no murmurs, gallops, or rubs  
+LUNG: CTAB, no wheezes, rales, rhonchi, breathing comfortably 
+without use of accessory muscles  
+ABDOMEN: distended, + fluid wave, not tense. NABS, nontender  
+EXTREMITIES: no cyanosis, clubbing or edema, moving all 4 
+extremities with purpose
+PULSES: 2+ DP pulses bilaterally  
+NEURO: CN II-XII intact, AAO3, no asterxis  
+SKIN: warm and well perfused, no excoriations or lesions, no 
+rashes
+"

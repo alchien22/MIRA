@@ -1,0 +1,15 @@
+note_id,subject_id,hadm_id,note_type,note_seq,charttime,storetime,text
+10000032-DS-24,10000032,25742920,DS,24,2180-08-07 00:00:00,2180-08-10 05:43:00," 
+Medications on Admission:
+The Preadmission Medication list is accurate and complete.
+1. Calcium Carbonate 500 mg PO BID 
+2. Emtricitabine-Tenofovir (Truvada) 1 TAB PO DAILY 
+3. Fluticasone Propionate 110mcg 1 PUFF IH BID 
+4. Lactulose 30 mL PO TID 
+5. Raltegravir 400 mg PO BID 
+6. Rifaximin 550 mg PO BID 
+7. TraMADOL (Ultram) ___ mg PO Q6H:PRN pain 
+8. albuterol sulfate 90 mcg/actuation inhalation Q6H:PRN 
+Wheezing 
+9. Tiotropium Bromide 1 CAP IH DAILY 
+"

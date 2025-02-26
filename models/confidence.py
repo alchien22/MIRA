@@ -21,7 +21,7 @@ def compute_confidence_score(response_latents, retrieved_latents, base_confidenc
     retrieval_confidence = (np.max(similarities) + 1) / 2
 
     # lambda_weight = compute_dynamic_lambda(retrieved_latents, response_latents)
-    lambda_weight = 0.5
+    lambda_weight = 0.3
 
     print(f'Base confidence: {base_confidence}')
     print(f'Retrieval confidence: {retrieval_confidence}')

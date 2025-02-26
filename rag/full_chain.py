@@ -3,7 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.messages.base import BaseMessage
 
-from models.inference_api import get_model
+from models.inference_api import get_model, generate_response_with_latents
 from models.confidence import compute_confidence_score
 
 import torch
@@ -117,13 +117,15 @@ def ask_question(chain, retriever, query):
     print(f"Debug: ask_question received query = {query}", flush=True)
 
     use_rag = is_ehr_query(query)
-    evidence = []
+    docs = []
+    evidence = ''
     
     if use_rag:
         print('Retrieving')
         torch.cuda.empty_cache()
         docs = retriever.invoke(query)
         docs = remove_duplicates(docs)
+        print(f'Found {len(docs)} docs')
         if not docs:
             return {"response": "I couldn't find any relevant documents."}
         evidence = format_docs(docs)
@@ -131,7 +133,7 @@ def ask_question(chain, retriever, query):
     response_data = chain.invoke({"question": query, "use_rag": use_rag, "context": evidence}, config={"configurable": {"session_id": "foo"}})
     print(f"Debug: Response data received = {response_data}", flush=True)
 
-    return {"response": response_data["response"], "docs": evidence, "confidence": response_data["confidence"]}
+    return {"response": response_data["response"], "docs": docs, "confidence": response_data["confidence"]}
 
 # from .memory import create_memory_chain
 # chain = create_memory_chain(model, rag_chain, chat_memory)

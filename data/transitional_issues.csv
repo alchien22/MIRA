@@ -1,0 +1,17 @@
+note_id,subject_id,hadm_id,note_type,note_seq,charttime,storetime,text
+10000032-DS-24,10000032,25742920,DS,24,2180-08-07 00:00:00,2180-08-10 05:43:00," 
+TRANSITIONAL ISSUES
+===================
+[ ] Follow-up peritoneal fluid culture
+[ ] New/changed medications: Furosemide 10mg daily (new)
+[ ] For hyperkalemia and hyponatremia, the patient should have 
+biweekly BMPs (script written). If K > 5.3, she should be given 
+kayexelate once weekly. Lab results will be faxed/sent to Dr. 
+___.
+[ ] Continue conversation regarding pleurex catheter placement 
+and code status.
+[ ] She will continue to have twice weekly paracenteses
+
+# Code: full  
+# Emergency Contact: ___ ___ 
+"
