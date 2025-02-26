@@ -4,7 +4,9 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.messages.base import BaseMessage
 
 from models.inference_api import get_model, generate_response_with_latents
-from models.confidence import compute_confidence_score, batch_extract_latents
+from models.confidence import compute_confidence_score
+
+import torch
 
 
 def format_docs(docs):
@@ -119,6 +121,7 @@ def ask_question(chain, retriever, query):
     
     if use_rag:
         print('Retrieving')
+        torch.cuda.empty_cache()
         docs = retriever.invoke(query)
         docs = remove_duplicates(docs)
         if not docs:

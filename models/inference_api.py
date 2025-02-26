@@ -6,6 +6,7 @@ import re
 
 from .confidence import compute_entropy_confidence, compute_perplexity_confidence
 
+
 @st.cache_resource
 def get_model():
     """Loads model and tokenizer"""

@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
-from retrieval.ensemble import ensemble_retriever_from_docs
+from retrieval.vector_store import VectorStore
 from rag.full_chain import create_full_chain, ask_question
-from retrieval.local_loader import load_txt_files
+from retrieval.local_loader import load_csv_files
 
 load_dotenv()
 
@@ -73,48 +73,17 @@ def get_retriever():
 
 
 def get_chain():
-    ensemble_retriever = get_retriever()
-    chain = create_full_chain(ensemble_retriever, chat_memory=StreamlitChatMessageHistory(key="langchain_messages"), confidence_method="entropy")
+    retriever = get_retriever()
+    chain = create_full_chain(retriever, chat_memory=StreamlitChatMessageHistory(key="langchain_messages"), confidence_method="entropy")
     return chain, retriever
 
 
-def get_secret_or_input():
-    if 'HUGGINGFACEHUB_API_TOKEN' in st.secrets:
-        secret_value = st.secrets['HUGGINGFACEHUB_API_TOKEN']
-    return secret_value
-
-
 def run():
-    local = True
-
-    if local:
-        if "langchain_messages" not in st.session_state:
-            st.session_state["langchain_messages"] = []
-            
-        chain, retriever = get_chain()
-        st.subheader("Ask me anything about a patient's medical history, symptoms, or treatment!")
-        show_ui(chain, retriever, "Hi, I'm MIRA, your personal medical assistant! What would you like to know?")
-    
-    else:
-        ready = True
-
-        huggingfacehub_api_token = st.session_state.get("HUGGINGFACEHUB_API_TOKEN")
+    if "langchain_messages" not in st.session_state:
+        st.session_state["langchain_messages"] = []
         
-        if not huggingfacehub_api_token:
-            huggingfacehub_api_token = get_secret_or_input()
-
-        if not huggingfacehub_api_token:
-            st.warning("Missing HUGGINGFACEHUB_API_TOKEN")
-            ready = False
-
-        if ready:
-            chain, retriever = get_chain()
-
-            st.title("Hi, I am MIRA! Your EHR Assistant🤖")
-            st.subheader("Ask me about a patient's medical history!")
-            show_ui(chain, retriever, "What would you like to know?")
-
-        else:
-            st.stop()
+    chain, retriever = get_chain()
+    st.subheader("Ask me anything about a patient's medical history, symptoms, or treatment!")
+    show_ui(chain, retriever, "Hi, I'm MIRA, your personal medical assistant! What would you like to know?")
 
 run()

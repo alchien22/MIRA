@@ -2,8 +2,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import torch
 
-# confidence = lambda * base_confidence + (1 - lambda) * retrieval_confidence
 
+# confidence = lambda * base_confidence + (1 - lambda) * retrieval_confidence
 def compute_confidence_score(response_latents, retrieved_latents, base_confidence, use_rag):
     """Compute a composite confidence score combining base confidence and retrieval similarity (if RAG is used)"""
     if not use_rag:
