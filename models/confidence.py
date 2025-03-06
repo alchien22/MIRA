@@ -38,6 +38,9 @@ def compute_entropy_confidence(logits_list, max_entropy=5):
         entropies.append(entropy)
 
     avg_entropy = sum(entropies) / len(entropies)
+    max_entropy = max(entropies)
+    # max_entropy = np.percentile(entropies, 95)
+    print(f'Max entropy found: {max_entropy}')
     base_confidence = 1 - (avg_entropy / max_entropy)
     return base_confidence
 

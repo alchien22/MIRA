@@ -49,3 +49,8 @@ Add Git Credentials
     git config --global user.email "alchien22@gmail.com"
 
 git clone https://github.com/alchien22/MIRA.git
+
+
+Check GPU usage:
+nvidia-smi -l 1
+gpustat -i -c
