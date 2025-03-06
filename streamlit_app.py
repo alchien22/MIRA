@@ -26,6 +26,10 @@ def show_ui(qa, retriever, prompt_to_user="How may I help you today?"):
     if "messages" not in st.session_state.keys():
         st.session_state.messages = [{"role": "assistant", "content": prompt_to_user, "confidence": None}]
 
+    if "transparency_mode" not in st.session_state:
+        st.session_state.transparency_mode = False
+    st.session_state.transparency_mode = st.sidebar.toggle("Transparency Mode", value=st.session_state.transparency_mode)
+
     # Display chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
@@ -48,10 +52,12 @@ def show_ui(qa, retriever, prompt_to_user="How may I help you today?"):
                 confidence = response_data.get("confidence", 0.0)
 
                 st.markdown(response)
-                st.write(f"**Confidence:** {confidence:.2f}")
+
+                if st.session_state.transparency_mode:
+                    st.write(f"**Confidence:** {confidence:.2f}")
 
                 evidence = response_data.get("docs", [])
-                if evidence:
+                if st.session_state.transparency_mode and evidence:
                     with st.expander("View Evidence"):
                         for i, doc in enumerate(evidence):
                             st.markdown(f"### Document {i+1}")
