@@ -34,7 +34,7 @@ def show_ui(qa, retriever, prompt_to_user="How may I help you today?"):
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
-            if "confidence" in message and message["confidence"] is not None:
+            if "confidence" in message and message["confidence"] is not None and st.session_state.transparency_mode:
                 st.write(f"**Confidence:** {message['confidence']:.2f}")
 
     # User-provided prompt
