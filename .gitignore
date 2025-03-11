@@ -6,3 +6,5 @@ __pycache__/
 .idea/
 .python-version
 store/
+venv
+env

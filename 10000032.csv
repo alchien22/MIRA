@@ -1,0 +1,302 @@
+note_id,subject_id,hadm_id,note_type,note_seq,charttime,storetime,text
+10000032-DS-24,10000032,25742920,DS,24,2180-08-07 00:00:00,2180-08-10 05:43:00," 
+Name:  ___                     Unit No:   ___
+ 
+Admission Date:  ___              Discharge Date:   ___
+ 
+Date of Birth:  ___             Sex:   F
+ 
+Service: MEDICINE
+ 
+Allergies: 
+Percocet / Vicodin
+ 
+Attending: ___.
+ 
+Chief Complaint:
+Abdominal pain
+ 
+Major Surgical or Invasive Procedure:
+___ Paracentesis
+
+ 
+History of Present Illness:
+___ w/ HIV on HAART, COPD on 3L home O2 (though sat'ing fine on 
+RA on admission), HCV cirrhosis c/b ascites requiring biweekly 
+therapeutic paracenteses, hepatic encephalopathy; not on 
+transplant list ___ comorbidities) p/w worsening girth and abd 
+pain. She'd been having pain from her ascites, and felt overdue 
+for a paracentesis. She last had paracentesis on the ___. 
+She reported that she began feeling worsening abdominal pain 
+(constant, epigastric and radiates to back, not a/w food) on 
+___, which increased in severity throughout the course of the 
+day. She was brought to the ED by her son because of this pain. 
+She had no confusion and was alert and oriented x3. The patient 
+also reported she recently ran out of most of her home 
+medications. She denied any fever, chills, shortness of breath, 
+cough, dysuria. She reported loose stool a bit more than usual, 
+but attributed it to lactulose use. In the ED, vitals were: 99.4 
+105 106/57 18 96% ra. Labs were significant for Na 127 K 5.3 
+lactate 2.1 INR 1.7. ALT 135 AST 244 AP 123. no leukocytosis. 
+Ascitic fluid showed 220 WBC. She was given Morphine Sulfate 5 
+mg IV ONCE MR1, and a GI cocktail.
+ 
+Past Medical History:
+- HCV Cirrhosis: genotype 3a  
+- HIV: on HAART, ___ CD4 count 173, ___ HIV viral load 
+undetectable  
+- COPD: ___ PFT showed FVC 1.95 (65%), FEV1 0.88 (37%), 
+FEFmax 2.00 (33%)  
+- Bipolar Affective Disorder  
+- PTSD  
+- Hx of cocaine and heroin abuse  
+- Hx of skin cancer per patient report  
+ 
+Social History:
+___
+Family History:
+She a total of five siblings, but she is not  talking to most of 
+them. She only has one brother that she is in touch with and 
+lives in ___. She is not aware of any known GI or liver 
+disease in her family.  
+ 
+Physical Exam:
+ADMISSION PHYSICAL EXAM
+=======================
+Vitals - T 97, BP 98/65, HR 103, RR 18, O2 94RA, Glucose 128.  
+GENERAL: NAD, lying on her right side.
+HEENT: AT/NC, EOMI, PERRL, anicteric sclera, pink conjunctiva, 
+MMM, good dentition  
+NECK: nontender supple neck, no LAD, no JVD  
+CARDIAC: RRR, S1/S2, no murmurs, gallops, or rubs  
+LUNG: CTAB, no wheezes, rales, rhonchi, breathing comfortably 
+without use of accessory muscles  
+ABDOMEN: distended, + fluid wave, not tense. NABS, nontender  
+EXTREMITIES: no cyanosis, clubbing or edema, moving all 4 
+extremities with purpose
+PULSES: 2+ DP pulses bilaterally  
+NEURO: CN II-XII intact, AAO3, no asterxis  
+SKIN: warm and well perfused, no excoriations or lesions, no 
+rashes
+
+DISCHARGE PHYSICAL EXAM
+=======================
+Vitals - Tm 98.6, Tc 98.2, BP 82-98/42-68, HR 80-95, RR ___, 
+O2 91-99% RA.
+GENERAL: NAD, lying on her right side.
+HEENT: AT/NC, EOMI, PERRL, anicteric sclera, pink conjunctiva, 
+MMM, good dentition  
+NECK: nontender supple neck, no LAD, no JVD  
+CARDIAC: RRR, S1/S2, no murmurs, gallops, or rubs  
+LUNG: CTAB, no wheezes, rales, rhonchi, breathing comfortably 
+without use of accessory muscles  
+ABDOMEN: soft, decreased distension, not tense. NABS, nontender  
+
+EXTREMITIES: no cyanosis, clubbing or edema, moving all 4 
+extremities with purpose
+PULSES: 2+ DP pulses bilaterally  
+NEURO: CN II-XII intact, AAO3, no asterxis  
+SKIN: warm and well perfused, no excoriations or lesions, no 
+rashes
+ 
+Pertinent Results:
+ADMISSION LABS
+==============
+___ 09:20PM BLOOD WBC-8.2# RBC-3.48* Hgb-12.3 Hct-36.7 
+MCV-106* MCH-35.5* MCHC-33.6 RDW-16.5* Plt ___
+___ 09:28PM BLOOD ___ PTT-31.8 ___
+___ 09:20PM BLOOD Glucose-118* UreaN-33* Creat-0.6 Na-127* 
+K-5.3* Cl-97 HCO3-24 AnGap-11
+___ 09:20PM BLOOD ALT-135* AST-244* AlkPhos-123* 
+TotBili-1.3
+___ 09:20PM BLOOD Albumin-3.5 Calcium-8.3* Phos-3.3 Mg-2.3
+___ 09:27PM BLOOD Lactate-2.1*
+
+NOTABLE LABS
+============
+___ 12:30AM ASCITES WBC-220* ___ Polys-17* 
+Lymphs-48* Monos-19* Mesothe-2* Macroph-12* Other-2*
+___ 12:30AM ASCITES TotPro-0.7 Glucose-129
+
+MICROBIOLOGY
+============
+___ 12:30 am PERITONEAL FLUID
+
+   GRAM STAIN (Final ___: 
+      NO POLYMORPHONUCLEAR LEUKOCYTES SEEN. 
+      NO MICROORGANISMS SEEN. 
+
+   FLUID CULTURE (Final ___:    NO GROWTH. 
+
+   ANAEROBIC CULTURE (Preliminary):    NO GROWTH.
+
+___ VRE screen: No VRE isolated.
+
+IMAGING/STUDIES
+===============
+CXR ___
+No acute cardiopulmonary process.
+
+RUQUS ___
+Cirrhotic, mild splenomegaly and ascites.  A solid 3cm nodule in 
+the left lobe of the liver is stable in size and appearance. 
+
+DISCHARGE LABS
+==============
+___ 06:15AM BLOOD WBC-5.6 RBC-3.27* Hgb-11.6* Hct-33.5* 
+MCV-103* MCH-35.5* MCHC-34.5 RDW-16.1* Plt ___
+___ 06:15AM BLOOD ___ PTT-36.0 ___
+___ 06:15AM BLOOD Glucose-87 UreaN-29* Creat-0.4 Na-123* 
+K-5.4* Cl-93* HCO3-24 AnGap-11
+___ 06:15AM BLOOD ALT-112* AST-176* AlkPhos-101 
+TotBili-2.8*
+___ 06:15AM BLOOD Albumin-3.5 Calcium-8.8 Phos-3.4 Mg-2.___ w/ HIV on HAART, COPD on 3L home O2, HCV cirrhosis 
+decompensated (ascites requiring biweekly therapeutic 
+paracenteses, hepatic encephalopathy; not on transplant list ___ 
+ 
+comorbidities) p/w worsening abd girth and pain.
+
+# Goals of care:  The patient expressed that her desire to ""let 
+go"" and be at peace. She is tired of ""fighting"" her end stage 
+liver disease and does not feel that she has a good quality of 
+life. She wished to meet with a representative from hospice, 
+which we were able to arrange, and she decided that she would 
+like to go home with hospice. A conversation was held with the 
+patient regarding code status. She noted that she would probably 
+be DNR/DNI, but would like to discuss it with her son (HCP). 
+Therefore, at this time, she remains full code. We also 
+discussed the possibility of her getting a pleurex catheter 
+placed because of her repeated paracenteses. She was discharged 
+to home with hospice on ___.
+
+# Decompensated HCV cirrhosis with ascites: The patient 
+presented with worsening ascites. Her pain was initially managed 
+with tramadol and morphine. She underwent ___ paracentesis 
+on ___ with removal of 3.5L and she received albumin. Studies 
+on the fluid were negative, and she reported a significant 
+improvement in her pain.
+ 
+# Hyperkalemia: During her hospitalization, it was noted that 
+she had hyperkalemia 5.3 -> 5.9 -> 6.9 without EKG changes. 
+After treatment with calcium gluconate 2gm x2, insulin and D50 x 
+2, and kayexelate, her K downtrended to 5.4. Her K has been 
+persistently elevated in the past and should continue to be 
+monitored.
+
+# Hepatic encephalopathy: The patient's mental status was A+Ox3 
+on admission. She was continued on rifaximin and lactulose 
+in-house and at discharge.
+
+CHRONIC ISSUES
+==============
+
+# Hyponatremia - The patient has a history of asymptomatic 
+hyponatremia. It is most likely hypervolemic hyponatremia 
+related to underlying liver disease as well as aldosterone axis 
+dysfunction related to liver disease. She remained asymptomatic 
+through her hospitalization. Because she was also started on 
+10mg of furosemide to help prevent fluid re-accumulation, she 
+will require BMPs twice weekly in the outpatient setting.
+
+# HIV: Emtricitabine-Tenofovir (Truvada) and Raltegravir were 
+continued in-house and at discharge.  
+
+# COPD: fluticasone, tiotropium and albuterol were continued 
+in-house and at discharge.
+
+TRANSITIONAL ISSUES
+===================
+[ ] Follow-up peritoneal fluid culture
+[ ] New/changed medications: Furosemide 10mg daily (new)
+[ ] For hyperkalemia and hyponatremia, the patient should have 
+biweekly BMPs (script written). If K > 5.3, she should be given 
+kayexelate once weekly. Lab results will be faxed/sent to Dr. 
+___.
+[ ] Continue conversation regarding pleurex catheter placement 
+and code status.
+[ ] She will continue to have twice weekly paracenteses
+
+# Code: full  
+# Emergency Contact: ___ ___ 
+ 
+Medications on Admission:
+The Preadmission Medication list is accurate and complete.
+1. Calcium Carbonate 500 mg PO BID 
+2. Emtricitabine-Tenofovir (Truvada) 1 TAB PO DAILY 
+3. Fluticasone Propionate 110mcg 1 PUFF IH BID 
+4. Lactulose 30 mL PO TID 
+5. Raltegravir 400 mg PO BID 
+6. Rifaximin 550 mg PO BID 
+7. TraMADOL (Ultram) ___ mg PO Q6H:PRN pain 
+8. albuterol sulfate 90 mcg/actuation inhalation Q6H:PRN 
+Wheezing 
+9. Tiotropium Bromide 1 CAP IH DAILY 
+
+ 
+Discharge Medications:
+1. albuterol sulfate 90 mcg/actuation inhalation Q6H:PRN 
+Wheezing 
+2. Calcium Carbonate 500 mg PO BID 
+3. Emtricitabine-Tenofovir (Truvada) 1 TAB PO DAILY 
+4. Fluticasone Propionate 110mcg 1 PUFF IH BID 
+5. Lactulose 30 mL PO TID 
+6. Raltegravir 400 mg PO BID 
+7. Rifaximin 550 mg PO BID 
+8. Tiotropium Bromide 1 CAP IH DAILY 
+9. TraMADOL (Ultram) ___ mg PO Q6H:PRN pain 
+10. Furosemide 10 mg PO DAILY 
+RX *furosemide 20 mg 0.5 (One half) tablet(s) by mouth Please 
+take 1 tablet daily. Disp #*15 Tablet Refills:*0
+11. Outpatient Lab Work
+Please obtain biweekly BMP to monitor K and Na. Please fax 
+results to Dr. ___ at the ___ at ___.
+
+ 
+Discharge Disposition:
+Home With Service
+ 
+Facility:
+___
+ 
+Discharge Diagnosis:
+PRIMARY DIAGNOSIS
+=================
+-Decompensated HCV cirrhosis
+-Hyperkalemia
+
+SECONDARY DIAGNOSES
+===================
+-HIV
+-COPD
+-Hyponatremia
+
+ 
+Discharge Condition:
+Mental Status: Clear and coherent.
+Level of Consciousness: Alert and interactive.
+Activity Status: Ambulatory - Independent.
+
+ 
+Discharge Instructions:
+Dear Ms. ___,
+
+It was a pleasure caring for you during your stay at ___. You 
+were admitted because of worsening abdominal pain. It is likely 
+that this pain was due to increasing fluid in the abdomen from 
+your cirrhosis. After a paracentesis in which much of this fluid 
+was removed, your pain improved significantly. You were noted to 
+have a high potassium during your hospitalization, which came 
+down with treatment but this should continue to be followed as 
+an outpatient. You also emphasized your desire to speak with a 
+representative from hospice. Because of your repeated 
+paracenteses, we also discussed the possibility of a pleurex 
+catheter placement. We arranged for you to meet with hospice 
+coordinators, and you will be discharged home with hospice.
+
+We wish you all the best!
+
+Your ___ care team
+ 
+Followup Instructions:
+___
+"

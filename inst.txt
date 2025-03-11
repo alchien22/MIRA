@@ -1,0 +1,55 @@
+1. Find available v100s: gcloud compute accelerator-types list --filter="name:nvidia-tesla-v100"
+
+2. Create VM: 
+    No GPU: gcloud compute instances create my-vm --machine-type=n1-standard-4 --image-family=ubuntu-2204-lts --image-project=ubuntu-os-cloud --boot-disk-size=100GB --scopes=https://www.googleapis.com/auth/cloud-platform  --zone=us-central1-b
+    V100 GPU: gcloud compute instances create my-gpu-vm --machine-type=n1-standard-8 --accelerator=type=nvidia-tesla-t4,count=1 --image-family=ubuntu-2204-lts --image-project=ubuntu-os-cloud --boot-disk-size=100GB --scopes=https://www.googleapis.com/auth/cloud-platform  --maintenance-policy=TERMINATE  --zone=us-east4-c 
+
+3. Install:
+    sudo apt update && sudo apt install -y python3 python3-pip git
+    sudo apt update && sudo apt install -y python3.10-venv
+    
+    curl -L https://github.com/GoogleCloudPlatform/compute-gpu-installation/releases/download/cuda-installer-v1.2.0/cuda_installer.pyz --output cuda_installer.pyz
+    sudo python3 cuda_installer.pyz install_driver
+
+    sudo apt update && sudo apt install -y nvidia-driver-535
+    sudo systemctl restart nvidia-persistenced
+    sudo reboot -> nvidia-smi
+
+4. Run: 
+    streamlit run streamlit_app.py --server.address 0.0.0.0 --server.port 8501
+
+
+Stop VM: gcloud compute instances stop my-vm --zone=us-central1-b
+Verify Stopped: gcloud compute instances list
+    Check if STATUS = TERMINATED
+Resume VM: gcloud compute instances start my-vm --zone=us-central1-b
+Delete VM: gcloud compute instances delete my-vm --zone=us-central1-b
+
+
+Check Instances: gcloud compute instances list
+Delete Instances: gcloud compute instances delete vm-name
+Zones list: gcloud compute zones list
+
+
+nproc  # Number of CPU cores
+free -h  # Available memory (RAM)
+df -h  # Disk space usage
+
+
+Add SSH to VS Code
+    Host gcp-vm
+        HostName <>  # Replace with your VM's EXTERNAL_IP
+        User YOUR_GCP_USERNAME
+        IdentityFile ~/.ssh/google_compute_engine
+
+
+Add Git Credentials
+    git config --global user.name "<>"
+    git config --global user.email "<>"
+
+git clone https://github.com/alchien22/MIRA.git
+
+
+Check GPU usage:
+nvidia-smi -l 1
+gpustat -i -c

@@ -1,0 +1,19 @@
+note_id,subject_id,hadm_id,note_type,note_seq,charttime,storetime,text
+10000032-DS-24,10000032,25742920,DS,24,2180-08-07 00:00:00,2180-08-10 05:43:00," 
+CHRONIC ISSUES
+==============
+
+# Hyponatremia - The patient has a history of asymptomatic 
+hyponatremia. It is most likely hypervolemic hyponatremia 
+related to underlying liver disease as well as aldosterone axis 
+dysfunction related to liver disease. She remained asymptomatic 
+through her hospitalization. Because she was also started on 
+10mg of furosemide to help prevent fluid re-accumulation, she 
+will require BMPs twice weekly in the outpatient setting.
+
+# HIV: Emtricitabine-Tenofovir (Truvada) and Raltegravir were 
+continued in-house and at discharge.  
+
+# COPD: fluticasone, tiotropium and albuterol were continued 
+in-house and at discharge.
+"

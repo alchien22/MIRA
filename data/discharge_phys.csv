@@ -1,0 +1,22 @@
+note_id,subject_id,hadm_id,note_type,note_seq,charttime,storetime,text
+10000032-DS-24,10000032,25742920,DS,24,2180-08-07 00:00:00,2180-08-10 05:43:00," 
+DISCHARGE PHYSICAL EXAM
+=======================
+Vitals - Tm 98.6, Tc 98.2, BP 82-98/42-68, HR 80-95, RR ___, 
+O2 91-99% RA.
+GENERAL: NAD, lying on her right side.
+HEENT: AT/NC, EOMI, PERRL, anicteric sclera, pink conjunctiva, 
+MMM, good dentition  
+NECK: nontender supple neck, no LAD, no JVD  
+CARDIAC: RRR, S1/S2, no murmurs, gallops, or rubs  
+LUNG: CTAB, no wheezes, rales, rhonchi, breathing comfortably 
+without use of accessory muscles  
+ABDOMEN: soft, decreased distension, not tense. NABS, nontender  
+
+EXTREMITIES: no cyanosis, clubbing or edema, moving all 4 
+extremities with purpose
+PULSES: 2+ DP pulses bilaterally  
+NEURO: CN II-XII intact, AAO3, no asterxis  
+SKIN: warm and well perfused, no excoriations or lesions, no 
+rashes
+"
