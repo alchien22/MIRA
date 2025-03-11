@@ -1,6 +1,5 @@
 1. Find available v100s: gcloud compute accelerator-types list --filter="name:nvidia-tesla-v100"
 
-
 2. Create VM: 
     No GPU: gcloud compute instances create my-vm --machine-type=n1-standard-4 --image-family=ubuntu-2204-lts --image-project=ubuntu-os-cloud --boot-disk-size=100GB --scopes=https://www.googleapis.com/auth/cloud-platform  --zone=us-central1-b
     V100 GPU: gcloud compute instances create my-gpu-vm --machine-type=n1-standard-8 --accelerator=type=nvidia-tesla-t4,count=1 --image-family=ubuntu-2204-lts --image-project=ubuntu-os-cloud --boot-disk-size=100GB --scopes=https://www.googleapis.com/auth/cloud-platform  --maintenance-policy=TERMINATE  --zone=us-east4-c 
@@ -39,14 +38,14 @@ df -h  # Disk space usage
 
 Add SSH to VS Code
     Host gcp-vm
-        HostName 35.202.217.34  # Replace with your VM's EXTERNAL_IP
-        User YOUR_GCP_USERNAME  # Usually "alexchien" or "your Google Cloud username" (use whoami in the VM)
+        HostName <>  # Replace with your VM's EXTERNAL_IP
+        User YOUR_GCP_USERNAME
         IdentityFile ~/.ssh/google_compute_engine
 
 
 Add Git Credentials
-    git config --global user.name "Alexander Chien"
-    git config --global user.email "alchien22@gmail.com"
+    git config --global user.name "<>"
+    git config --global user.email "<>"
 
 git clone https://github.com/alchien22/MIRA.git
 
