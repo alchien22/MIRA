@@ -5,6 +5,7 @@ from langchain_core.messages.base import BaseMessage
 
 from models.inference_api import get_model, generate_response_with_latents
 from models.confidence import compute_confidence_score
+from models.critic import generate_critic_score
 
 import torch
 
@@ -38,11 +39,11 @@ def remove_duplicates(documents):
     return unique_docs
 
 
-def make_rag_chain(model, retriever, rag_prompt, tokenizer, confidence_method="entropy"):
+def make_rag_chain(model, rag_prompt, tokenizer, confidence_method="entropy"):
     """Create a RAG chain with a retriever and a model."""
     def retrieve_with_confidence(input):
         question = get_question(input)
-        print(f"Debug: retrieve_with_confidence received query = {question}", flush=True)
+        # print(f"Debug: retrieve_with_confidence received query = {question}", flush=True)
 
         use_rag = input.get("use_rag", True)
         context = input.get("context", '')
@@ -53,7 +54,12 @@ def make_rag_chain(model, retriever, rag_prompt, tokenizer, confidence_method="e
 
         if use_rag and context:
             _, retrieved_latents, _ = generate_response_with_latents(model, tokenizer, context, confidence_method)
-            confidence_score = compute_confidence_score(response_latents, retrieved_latents, base_confidence, use_rag)
+            # Get factuality score
+            factuality_score = generate_critic_score(model, tokenizer, critic_type="factuality", question=question, retrieved_info=context, generated_answer=response)
+            # Get consistency score
+            consistency_score = generate_critic_score(model, tokenizer, critic_type="consistency", retrieved_info=context, generated_answer=response)
+            # Compute confidence score
+            confidence_score = compute_confidence_score(response_latents, retrieved_latents, base_confidence, use_rag, factuality_score, consistency_score)
         else:
             confidence_score = base_confidence
 
@@ -62,48 +68,18 @@ def make_rag_chain(model, retriever, rag_prompt, tokenizer, confidence_method="e
     return RunnableLambda(retrieve_with_confidence)
 
 
-def create_full_chain(retriever, chat_memory=ChatMessageHistory(), confidence_method="entropy"):
+def create_full_chain(retriever, confidence_method="entropy"):
     model, tokenizer = get_model()
-    tokenizer.chat_template = """
-{% for message in messages %}
-{% if loop.first %}
-<|begin_of_text|>
-{% endif %}
-{% if message['role'] == 'system' %}
-<|start_header_id|>system<|end_header_id|>
-{{ message['content'] }}<|eot_id|>
-{% elif message['role'] == 'user' %}
-<|start_header_id|>user<|end_header_id|>
-{% if message['context'] %}
-Context:
-{{ message['context'] }}
-{% endif %}
 
-Question:
-{{ message['content'] }}<|eot_id|>
-{% elif message['role'] == 'assistant' %}
-<|start_header_id|>assistant<|end_header_id|>
-{{ message['content'] }}<|eot_id|>
-{% endif %}
-{% if loop.last and add_generation_prompt %}
-<|start_header_id|>assistant<|end_header_id|>
-{% endif %}
-{% endfor %}
-    """
-
-    chat = [
-        {"role": "system", "content": (
-            "You are a medical expert AI assistant called MIRA. "
-            "Provide short and concise responses in under 200 tokens. "
-            "When asked about a patient's medical records, you should provide a response based on the information given below.")
-        },
-        {
-            "role": "user", 
-            "context": "{context}",
-            "content": "{question}"
-        }
-    ]
-    prompt = tokenizer.apply_chat_template(chat, add_generation_prompt=True, tokenize=False)
+    prompt = (
+        "You are a medical expert AI assistant called MIRA.\n"
+        "Provide a short and concise response.\n"
+        "Use the information provided in the context to answer the question.\n\n"
+        "Context:\n{context}\n\n"
+        "Question:\n{question}\n\n"
+        "Answer:"
+    )
+    
     return make_rag_chain(model, retriever, rag_prompt=prompt, tokenizer=tokenizer, confidence_method=confidence_method)
 
 
@@ -114,14 +90,14 @@ def is_ehr_query(query):
 
 
 def ask_question(chain, retriever, query):
-    print(f"Debug: ask_question received query = {query}", flush=True)
+    # print(f"Debug: ask_question received query = {query}", flush=True)
 
-    use_rag = is_ehr_query(query)
+    use_rag = True #is_ehr_query(query)
     docs = []
     evidence = ''
     
     if use_rag:
-        print('Retrieving')
+        # print('Retrieving')
         torch.cuda.empty_cache()
         docs = retriever.invoke(query)
         docs = remove_duplicates(docs)

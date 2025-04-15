@@ -2,36 +2,44 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import torch
 
-
-# confidence = lambda * base_confidence + (1 - lambda) * retrieval_confidence
-def compute_confidence_score(seq_logits, response_latents, retrieved_latents, use_rag=True):
-    """Compute a composite confidence score combining base confidence and retrieval similarity (if RAG is used)"""
+def compute_confidence_score(seq_logits, response_latents, retrieved_latents, use_rag=True, factuality_score=None, consistency_score=None):
+    """
+        Compute a composite confidence score combining factuality, model confidence, and retrieval confidence (weighted by a dynamic lambda)
+            Factuality score: from a critic model
+            Model confidence: token-level confidence (entropy, margin, variation)
+            Retrieval confidence: based on cosine similarity and consistency score
+            Dyamic lambda: weight based on variation in response entropies and retrieval diversity
+    """
     # Base confidence: Composite, Entropy, Margin, Variation, Entropies
     base_confidence = compute_token_confidence(seq_logits)
 
     if not use_rag:
         return base_confidence['composite']
-    
-    factuality_score = None
-    consistency_score = None
 
     lambda_weight = compute_dynamic_lambda(base_confidence['entropies'], retrieved_latents)
     retrieval_confidence = compute_retrieval_confidence(response_latents, retrieved_latents, consistency_score)
 
-    # Add factuality score
-    final_confidence = lambda_weight * base_confidence['composite'] + (1 - lambda_weight) * retrieval_confidence
+    # Confidence: factuality * (lambda * model_confidence + (1 - lambda) * retrieval_confidence)
+    final_confidence = factuality_score * (lambda_weight * base_confidence['composite'] + (1 - lambda_weight) * retrieval_confidence)
 
-    print(f'Composite Token Confidence: {base_confidence['composite']:.3f}')
-    print(f'Entropy Confidence: {base_confidence['entropy']:.3f}')
-    print(f'Margin Confidence: {base_confidence['margin']:.3f}')
-    print(f'Variation Confidence: {base_confidence['variation']:.3f}\n')
+    print(f'Factuality Score: {factuality_score:.3f}')
     print(f'λ (dynamic): {lambda_weight:.3f}\n')
+    print(f'Model Confidence: {base_confidence['composite']:.3f}')
+    # print(f'Entropy Confidence: {base_confidence['entropy']:.3f}')
+    # print(f'Margin Confidence: {base_confidence['margin']:.3f}')
+    # print(f'Variation Confidence: {base_confidence['variation']:.3f}\n')
     print(f'Retrieval Confidence: {retrieval_confidence:.3f}')
     print(f'Final Confidence: {final_confidence:.3f}')
     return final_confidence
 
 
 def compute_token_confidence(seq_logits):
+    '''
+        composite token confidence: avg of entropy, margin, and variation confidence
+            entropy confidence: 1 - avg_entropy / max_entropy (entropy meaning shannon entropy of the token probs over entire vocab)
+            margin confidence: avg. difference between top-2 probs in the vocab. for each token
+            variation confidence: 1 - avg_variation_ratio (where variation ratio is 0 if top-1 prob > 0.5)
+    '''
     entropies = []
     margins = []
     variation_ratios = []
@@ -75,6 +83,11 @@ def compute_token_confidence(seq_logits):
 
 
 def compute_dynamic_lambda(entropy_scores, retrieved_latents):
+    '''
+        dynamic lambda: weight decreases with entropy variance and increases with higher retrieval diversity
+            (higher variance = lower model confidence)
+            (diversity = likely worse retrievals)
+    '''
     # Entropy variance: variance in uncertainty (higher = more uncertainty about certain tokens)
     entropy_variance = np.var(entropy_scores)
 
@@ -93,9 +106,13 @@ def compute_dynamic_lambda(entropy_scores, retrieved_latents):
 
 
 def compute_retrieval_confidence(response_latents, retrieved_latents, consistency_score):
+    '''
+        retrieval confidence: weighted sum of cosine similarity and consistency score from a critic model
+    '''
     retrieved_matrix = np.array(retrieved_latents)
     response_vector = np.array(response_latents)
 
+    # Reshape retrieval latents to be doc per row
     retrieved_matrix = retrieved_matrix.reshape(len(retrieved_latents), -1)
     response_vector = response_vector.reshape(1, -1)
 
@@ -104,5 +121,7 @@ def compute_retrieval_confidence(response_latents, retrieved_latents, consistenc
     # Rescale cosine similarity ([-1,1] -> [0,1])
     cosine_confidence = (np.max(similarities) + 1) / 2
 
-    retrieval_confidence = consistency_score * 0.7 + cosine_confidence * 0.3
+    # Weight consistency score more heavily (from a critic model)
+    weight = 0.7
+    retrieval_confidence = weight * consistency_score + (1 - weight) * cosine_confidence
     return retrieval_confidence

@@ -11,7 +11,8 @@ from retrieval.local_loader import load_csv_files
 
 load_dotenv()
 
-MODEL_ID = "johnsnowlabs/JSL-MedLlama-3-8B-v2.0"
+# MODEL_ID = "johnsnowlabs/JSL-MedLlama-3-8B-v2.0"
+MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
 os.environ["MODEL_ID"] = MODEL_ID
 
 st.set_page_config(
