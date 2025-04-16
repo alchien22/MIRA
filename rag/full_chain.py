@@ -39,7 +39,7 @@ def remove_duplicates(documents):
     return unique_docs
 
 
-def make_rag_chain(model, rag_prompt, tokenizer, confidence_method="entropy"):
+def make_rag_chain(model, rag_prompt, tokenizer):
     """Create a RAG chain with a retriever and a model."""
     def retrieve_with_confidence(input):
         question = get_question(input)
@@ -50,16 +50,17 @@ def make_rag_chain(model, rag_prompt, tokenizer, confidence_method="entropy"):
 
         full_prompt = str(rag_prompt.format(context=context, question=question))
 
-        response, response_latents, base_confidence = generate_response_with_latents(model, tokenizer, full_prompt, confidence_method)
+        response, response_latents, base_confidence = generate_response_with_latents(model, tokenizer, full_prompt)
 
         if use_rag and context:
-            _, retrieved_latents, _ = generate_response_with_latents(model, tokenizer, context, confidence_method)
+            # Generate latents of the context
+            _, retrieved_latents, _ = generate_response_with_latents(model, tokenizer, context)
             # Get factuality score
             factuality_score = generate_critic_score(model, tokenizer, critic_type="factuality", question=question, retrieved_info=context, generated_answer=response)
             # Get consistency score
             consistency_score = generate_critic_score(model, tokenizer, critic_type="consistency", retrieved_info=context, generated_answer=response)
             # Compute confidence score
-            confidence_score = compute_confidence_score(response_latents, retrieved_latents, base_confidence, use_rag, factuality_score, consistency_score)
+            confidence_score = compute_confidence_score(base_confidence, response_latents, retrieved_latents, use_rag, factuality_score, consistency_score)
         else:
             confidence_score = base_confidence
 
@@ -68,7 +69,7 @@ def make_rag_chain(model, rag_prompt, tokenizer, confidence_method="entropy"):
     return RunnableLambda(retrieve_with_confidence)
 
 
-def create_full_chain(retriever, confidence_method="entropy"):
+def create_full_chain(retriever):
     model, tokenizer = get_model()
 
     prompt = (
@@ -80,7 +81,7 @@ def create_full_chain(retriever, confidence_method="entropy"):
         "Answer:"
     )
     
-    return make_rag_chain(model, retriever, rag_prompt=prompt, tokenizer=tokenizer, confidence_method=confidence_method)
+    return make_rag_chain(model, retriever, rag_prompt=prompt, tokenizer=tokenizer)
 
 
 def is_ehr_query(query):
@@ -110,6 +111,3 @@ def ask_question(chain, retriever, query):
     print(f"Debug: Response data received = {response_data}", flush=True)
 
     return {"response": response_data["response"], "docs": docs, "confidence": response_data["confidence"]}
-
-# from .memory import create_memory_chain
-# chain = create_memory_chain(model, rag_chain, chat_memory)

@@ -4,7 +4,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 import streamlit as st
 import re
 
-from .confidence import compute_entropy_confidence, compute_perplexity_confidence
+from .confidence import compute_token_confidence
 
 
 @st.cache_resource
@@ -28,7 +28,7 @@ def get_model():
     return model, tokenizer
 
 
-def generate_response_with_latents(model, tokenizer, input_text, confidence_method="entropy"):
+def generate_response_with_latents(model, tokenizer, input_text):
     """Generates response and extracts latent representation & base confidence"""
     print(f"Debug: Processing input_text = {input_text}", flush=True)
 
@@ -55,12 +55,7 @@ def generate_response_with_latents(model, tokenizer, input_text, confidence_meth
 
     # Compute base confidence
     final_logits = output.scores
-    if confidence_method == "entropy":
-        base_confidence = compute_entropy_confidence(final_logits)
-    elif confidence_method == "perplexity":
-        base_confidence = compute_perplexity_confidence(final_logits)
-    else:
-        raise ValueError("Invalid confidence method!")
+    base_confidence = compute_token_confidence(final_logits)
 
     return response_text, pooled_embedding.squeeze().tolist(), base_confidence
 

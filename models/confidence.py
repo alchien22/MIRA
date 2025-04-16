@@ -2,7 +2,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import torch
 
-def compute_confidence_score(seq_logits, response_latents, retrieved_latents, use_rag=True, factuality_score=None, consistency_score=None):
+def compute_confidence_score(base_confidence, response_latents, retrieved_latents, use_rag=True, factuality_score=None, consistency_score=None):
     """
         Compute a composite confidence score combining factuality, model confidence, and retrieval confidence (weighted by a dynamic lambda)
             Factuality score: from a critic model
@@ -10,9 +10,6 @@ def compute_confidence_score(seq_logits, response_latents, retrieved_latents, us
             Retrieval confidence: based on cosine similarity and consistency score
             Dyamic lambda: weight based on variation in response entropies and retrieval diversity
     """
-    # Base confidence: Composite, Entropy, Margin, Variation, Entropies
-    base_confidence = compute_token_confidence(seq_logits)
-
     if not use_rag:
         return base_confidence['composite']
 
@@ -24,7 +21,7 @@ def compute_confidence_score(seq_logits, response_latents, retrieved_latents, us
 
     print(f'Factuality Score: {factuality_score:.3f}')
     print(f'λ (dynamic): {lambda_weight:.3f}\n')
-    print(f'Model Confidence: {base_confidence['composite']:.3f}')
+    print(f"Model Confidence: {base_confidence['composite']:.3f}")
     # print(f'Entropy Confidence: {base_confidence['entropy']:.3f}')
     # print(f'Margin Confidence: {base_confidence['margin']:.3f}')
     # print(f'Variation Confidence: {base_confidence['variation']:.3f}\n')
