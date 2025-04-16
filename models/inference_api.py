@@ -1,11 +1,11 @@
 import os
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, StoppingCriteriaList
 import streamlit as st
 import re
 
 from .confidence import compute_token_confidence
-
+from .utils import StopOnToken
 
 @st.cache_resource
 def get_model():
@@ -27,22 +27,30 @@ def get_model():
 
 def generate_response_with_latents(model, tokenizer, input_text):
     """Generates response and extracts latent representation & base confidence"""
-    print(f"Debug: Processing input_text = {input_text}", flush=True)
+    # print(f"Debug: Processing input_text = {input_text}", flush=True)
 
     inputs = tokenizer(input_text, return_tensors="pt").to("cuda")
+
+    if "<END>" not in tokenizer.get_vocab():
+        tokenizer.add_special_tokens({"additional_special_tokens": ["<END>"]})
+        model.resize_token_embeddings(len(tokenizer))
+    END_ID = tokenizer.convert_tokens_to_ids("<END>")
+    stop = StoppingCriteriaList([StopOnToken([END_ID])])
+
     torch.cuda.empty_cache()
     with torch.no_grad():
         output = model.generate(
             **inputs, 
-            max_new_tokens=512,
+            stopping_criteria=stop,
+            max_new_tokens=100,
             return_dict_in_generate=True,
             output_hidden_states=True,
             output_scores=True,
-            pad_token_id=tokenizer.eos_token_id
+            eos_token_id=None,
         )
 
     generated_tokens = output.sequences[0][inputs['input_ids'].shape[-1]:]
-    response_text = tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
+    response_text = tokenizer.decode(generated_tokens, skip_special_tokens=False).split("<END>")[0].strip()
     response_text = format_bullets(response_text)
 
     # Extract latents from final step of generation

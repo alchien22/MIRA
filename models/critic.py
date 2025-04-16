@@ -1,7 +1,11 @@
 import torch
 from .prompt import FACTUALITY_PROMPT, CONSISTENCY_PROMPT
 import re
+
+from .utils import StopOnToken
+from transformers import StoppingCriteriaList
 # Models: Llama 8B, Llama 7B, Mistral 7B base
+
 
 def generate_critic_score(model, tokenizer, critic_type="factuality", question=None, retrieved_info=None, generated_answer=None):
     if critic_type == "factuality":
@@ -17,16 +21,21 @@ def generate_critic_score(model, tokenizer, critic_type="factuality", question=N
         )
 
     input = tokenizer(prompt, return_tensors="pt").to("cuda")
+    END_ID = tokenizer.convert_tokens_to_ids("<END_CRITIC>")
+    stopping = StoppingCriteriaList([StopOnToken([END_ID])])
 
     torch.cuda.empty_cache()
     with torch.no_grad():
         generated_ids = model.generate(
             **input, 
-            max_new_tokens=512,
+            stopping_criteria=stopping,
+            max_new_tokens=160,
             pad_token_id=tokenizer.eos_token_id
         )
 
-    response_text = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+    generated_tokens = generated_ids[:, input["input_ids"].shape[-1]:]
+    response_text = tokenizer.decode(generated_tokens[0], skip_special_tokens=True).split("<END_CRITIC>")[0].strip()
+    print(f'{critic_type} Critic Response:\n{response_text}')
     score = get_score(response_text)
 
     if score is None:
@@ -37,8 +46,8 @@ def generate_critic_score(model, tokenizer, critic_type="factuality", question=N
     return score/100
 
 def get_score(response):
-    match = re.search(r"(Correctness|Consistency)\s*Score\s*[:\-]?\s*(\d{1,3})", response, re.IGNORECASE)
-    if match:
-        score = int(match.group(2))
-        return min(score, 100)
-    return None
+    _SCORE_RE = re.compile(r"(Factuality|Consistency)\s*Score\s*[:\-]?\s*([0-9]+(?:\.[0-9]+)?)", re.I)
+    match = _SCORE_RE.search(response)
+    if not match: 
+        return None
+    return min(float(match.group(2)), 100.0)

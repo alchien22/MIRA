@@ -49,8 +49,10 @@ def make_rag_chain(model, rag_prompt, tokenizer):
         context = input.get("context", '')
 
         full_prompt = str(rag_prompt.format(context=context, question=question))
+        print(full_prompt)
 
         response, response_latents, base_confidence = generate_response_with_latents(model, tokenizer, full_prompt)
+        print(response)
 
         if use_rag and context:
             # Generate latents of the context
@@ -72,14 +74,24 @@ def make_rag_chain(model, rag_prompt, tokenizer):
 def create_full_chain():
     model, tokenizer = get_model()
 
-    prompt = (
-        "You are a medical expert AI assistant called MIRA.\n"
-        "Provide a short and concise response.\n"
-        "Use the information provided in the context to answer the question.\n\n"
-        "Context:\n{context}\n\n"
-        "Question:\n{question}\n\n"
-        "Answer:"
-    )
+    prompt = """<s>[SYS]
+You are **MIRA**, a medical‑expert AI assistant. 
+• Answer strictly from the given **Context** — do not invent facts.  
+• Be concise: 1‑3 sentences (≤ 60 words).  
+• No self‑references, apologies, or follow‑up questions.  
+• End your answer with the token <END>.
+[/SYS]
+
+[CONTEXT]
+{context}
+[/CONTEXT]
+
+[USER]
+{question}
+[/USER]
+
+[ASSISTANT]
+"""
     
     return make_rag_chain(model, rag_prompt=prompt, tokenizer=tokenizer)
 
@@ -108,6 +120,6 @@ def ask_question(chain, retriever, query):
         evidence = format_docs(docs)
 
     response_data = chain.invoke({"question": query, "use_rag": use_rag, "context": evidence}, config={"configurable": {"session_id": "foo"}})
-    print(f"Debug: Response data received = {response_data}", flush=True)
+    # print(f"Debug: Response data received = {response_data}", flush=True)
 
     return {"response": response_data["response"], "docs": docs, "confidence": response_data["confidence"]}
