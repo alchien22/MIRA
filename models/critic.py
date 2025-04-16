@@ -20,15 +20,13 @@ def generate_critic_score(model, tokenizer, critic_type="factuality", question=N
 
     torch.cuda.empty_cache()
     with torch.no_grad():
-        output = model.generate(
+        generated_ids = model.generate(
             **input, 
             max_new_tokens=512,
             pad_token_id=tokenizer.eos_token_id
         )
 
-    generated_tokens = output.sequences[0][input['input_ids'].shape[-1]:]
-    response_text = tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
-
+    response_text = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
     score = get_score(response_text)
 
     if score is None:

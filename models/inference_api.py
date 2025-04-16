@@ -11,17 +11,14 @@ from .confidence import compute_token_confidence
 def get_model():
     """Loads model and tokenizer"""
     model_name = os.getenv("MODEL_ID")
-    quant_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True)
-    # quant_config = BitsAndBytesConfig(load_in_8bit=True)
+    # quant_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True)
+    quant_config = BitsAndBytesConfig(load_in_8bit=True)
     
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
         model_name, 
         device_map="auto",
-        quantization_config=quant_config, 
-        output_hidden_states=True,
-        return_dict_in_generate=True,
-
+        quantization_config=quant_config
     )
     model.gradient_checkpointing_enable()
     model.eval()
