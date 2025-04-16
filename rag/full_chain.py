@@ -69,7 +69,7 @@ def make_rag_chain(model, rag_prompt, tokenizer):
     return RunnableLambda(retrieve_with_confidence)
 
 
-def create_full_chain(retriever):
+def create_full_chain():
     model, tokenizer = get_model()
 
     prompt = (
@@ -81,7 +81,7 @@ def create_full_chain(retriever):
         "Answer:"
     )
     
-    return make_rag_chain(model, retriever, rag_prompt=prompt, tokenizer=tokenizer)
+    return make_rag_chain(model, rag_prompt=prompt, tokenizer=tokenizer)
 
 
 def is_ehr_query(query):

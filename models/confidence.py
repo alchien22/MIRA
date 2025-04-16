@@ -13,7 +13,7 @@ def compute_confidence_score(base_confidence, response_latents, retrieved_latent
     if not use_rag:
         return base_confidence['composite']
 
-    lambda_weight = compute_dynamic_lambda(base_confidence['entropies'], retrieved_latents)
+    lambda_weight = 0.5 #compute_dynamic_lambda(base_confidence['entropies'], retrieved_latents)
     retrieval_confidence = compute_retrieval_confidence(response_latents, retrieved_latents, consistency_score)
 
     # Confidence: factuality * (lambda * model_confidence + (1 - lambda) * retrieval_confidence)
@@ -79,6 +79,24 @@ def compute_token_confidence(seq_logits):
     }
 
 
+def compute_retrieval_confidence(response_latents, retrieved_latents, consistency_score):
+    '''
+        retrieval confidence: weighted sum of cosine similarity and consistency score from a critic model
+    '''
+    response_vector = np.atleast_2d(response_latents)  # shape (1, D)
+    retrieved_matrix = np.atleast_2d(retrieved_latents) # shape (N, D)
+
+    similarities = cosine_similarity(response_vector, retrieved_matrix)
+
+    # Rescale cosine similarity ([-1,1] -> [0,1])
+    cosine_confidence = (np.max(similarities) + 1) / 2
+
+    # Weight consistency score more heavily (from a critic model)
+    weight = 0.7
+    retrieval_confidence = weight * consistency_score + (1 - weight) * cosine_confidence
+    return retrieval_confidence
+
+
 def compute_dynamic_lambda(entropy_scores, retrieved_latents):
     '''
         dynamic lambda: weight decreases with entropy variance and increases with higher retrieval diversity
@@ -100,25 +118,3 @@ def compute_dynamic_lambda(entropy_scores, retrieved_latents):
     # High entropy variance -> rely more on retrieval confidence (low lambda)
     # High retrieval diversity -> rely more on base confidence (high lambda)
     return lambda_dynamic
-
-
-def compute_retrieval_confidence(response_latents, retrieved_latents, consistency_score):
-    '''
-        retrieval confidence: weighted sum of cosine similarity and consistency score from a critic model
-    '''
-    retrieved_matrix = np.array(retrieved_latents)
-    response_vector = np.array(response_latents)
-
-    # Reshape retrieval latents to be doc per row
-    retrieved_matrix = retrieved_matrix.reshape(len(retrieved_latents), -1)
-    response_vector = response_vector.reshape(1, -1)
-
-    similarities = cosine_similarity(response_vector, retrieved_matrix)
-
-    # Rescale cosine similarity ([-1,1] -> [0,1])
-    cosine_confidence = (np.max(similarities) + 1) / 2
-
-    # Weight consistency score more heavily (from a critic model)
-    weight = 0.7
-    retrieval_confidence = weight * consistency_score + (1 - weight) * cosine_confidence
-    return retrieval_confidence

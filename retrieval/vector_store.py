@@ -84,7 +84,7 @@ class VectorStore:
         vs_retriever = self.vector_store.as_retriever(
             search_type="similarity",
             search_kwargs={
-                "k": 1,
+                "k": 2,
                 "filter": {
                     'subject_id': '10000032'
                 }
@@ -94,7 +94,7 @@ class VectorStore:
         bm25_retriever = BM25Retriever.from_documents(
             self.data,
             search_kwargs={
-                "k": 1,
+                "k": 2,
                 "filter": {
                     'subject_id': '10000032'
                 }
@@ -104,5 +104,5 @@ class VectorStore:
         return LimitedEnsembleRetriever(
             retrievers=[vs_retriever, bm25_retriever],
             weights=[0.5, 0.5],
-            limit=1
+            limit=2
         )

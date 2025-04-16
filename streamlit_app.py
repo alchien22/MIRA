@@ -81,7 +81,7 @@ def get_retriever():
 
 def get_chain():
     retriever = get_retriever()
-    chain = create_full_chain(retriever)
+    chain = create_full_chain()
     return chain, retriever
 
 
