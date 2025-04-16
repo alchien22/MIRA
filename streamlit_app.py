@@ -81,7 +81,7 @@ def get_retriever():
 
 def get_chain():
     retriever = get_retriever()
-    chain = create_full_chain(retriever, chat_memory=StreamlitChatMessageHistory(key="langchain_messages"))
+    chain = create_full_chain(retriever)
     return chain, retriever
 
 

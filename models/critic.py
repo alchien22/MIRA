@@ -1,5 +1,5 @@
 import torch
-from prompt import FACTUALITY_PROMPT, CONSISTENCY_PROMPT
+from .prompt import FACTUALITY_PROMPT, CONSISTENCY_PROMPT
 import re
 # Models: Llama 8B, Llama 7B, Mistral 7B base
 
