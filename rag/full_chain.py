@@ -6,6 +6,7 @@ from langchain_core.messages.base import BaseMessage
 from models.inference_api import get_model, generate_response_with_latents
 from models.confidence import compute_confidence_score
 from models.critic import generate_critic_score
+from models.prompt import MIRA_PROMPT
 
 import torch
 
@@ -58,9 +59,9 @@ def make_rag_chain(model, rag_prompt, tokenizer):
             # Generate latents of the context
             _, retrieved_latents, _ = generate_response_with_latents(model, tokenizer, context)
             # Get factuality score
-            factuality_score = generate_critic_score(model, tokenizer, critic_type="factuality", question=question, retrieved_info=context, generated_answer=response)
+            factuality_score = generate_critic_score(model, tokenizer, critic_type="factuality", question=question, retrieved_info=context, generated_answer=response, model_type='gpt')
             # Get consistency score
-            consistency_score = generate_critic_score(model, tokenizer, critic_type="consistency", retrieved_info=context, generated_answer=response)
+            consistency_score = generate_critic_score(model, tokenizer, critic_type="consistency", retrieved_info=context, generated_answer=response, model_type='gpt')
             # Compute confidence score
             confidence_score = compute_confidence_score(base_confidence, response_latents, retrieved_latents, use_rag, factuality_score, consistency_score)
         else:
@@ -73,27 +74,7 @@ def make_rag_chain(model, rag_prompt, tokenizer):
 
 def create_full_chain():
     model, tokenizer = get_model()
-
-    prompt = """<s>[SYS]
-You are **MIRA**, a medical‑expert AI assistant. 
-• Answer strictly from the given **Context** — do not invent facts.  
-• Be concise: 1‑3 sentences (≤ 60 words).  
-• No self‑references, apologies, or follow‑up questions.  
-• End your answer with the token <END>.
-[/SYS]
-
-[CONTEXT]
-{context}
-[/CONTEXT]
-
-[USER]
-{question}
-[/USER]
-
-[ASSISTANT]
-"""
-    
-    return make_rag_chain(model, rag_prompt=prompt, tokenizer=tokenizer)
+    return make_rag_chain(model, rag_prompt=MIRA_PROMPT, tokenizer=tokenizer)
 
 
 def is_ehr_query(query):

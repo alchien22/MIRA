@@ -17,3 +17,5 @@ transformers
 accelerate
 bitsandbytes
 gpustat
+openai
+google-generativeai

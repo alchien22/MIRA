@@ -20,13 +20,13 @@ def compute_confidence_score(base_confidence, response_latents, retrieved_latent
     final_confidence = factuality_score * (lambda_weight * base_confidence['composite'] + (1 - lambda_weight) * retrieval_confidence)
 
     print(f'Factuality Score: {factuality_score:.3f}')
-    print(f'λ (dynamic): {lambda_weight:.3f}\n')
+    # print(f'λ (dynamic): {lambda_weight:.3f}\n')
     print(f"Model Confidence: {base_confidence['composite']:.3f}")
     # print(f'Entropy Confidence: {base_confidence['entropy']:.3f}')
     # print(f'Margin Confidence: {base_confidence['margin']:.3f}')
     # print(f'Variation Confidence: {base_confidence['variation']:.3f}\n')
     print(f'Retrieval Confidence: {retrieval_confidence:.3f}')
-    print(f'Final Confidence: {final_confidence:.3f}')
+    # print(f'Final Confidence: {final_confidence:.3f}')
     return final_confidence
 
 
@@ -94,6 +94,7 @@ def compute_retrieval_confidence(response_latents, retrieved_latents, consistenc
     # Weight consistency score more heavily (from a critic model)
     weight = 0.7
     retrieval_confidence = weight * consistency_score + (1 - weight) * cosine_confidence
+    print(f'cosine sim: {cosine_confidence}')
     return retrieval_confidence
 
 

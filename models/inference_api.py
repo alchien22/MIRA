@@ -11,8 +11,8 @@ from .utils import StopOnToken
 def get_model():
     """Loads model and tokenizer"""
     model_name = os.getenv("MODEL_ID")
-    quant_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True)
-    # quant_config = BitsAndBytesConfig(load_in_8bit=True)
+    # quant_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True)
+    quant_config = BitsAndBytesConfig(load_in_8bit=True)
     
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
@@ -33,14 +33,16 @@ def generate_response_with_latents(model, tokenizer, input_text):
 
     if "<END>" not in tokenizer.get_vocab():
         tokenizer.add_special_tokens({"additional_special_tokens": ["<END>"]})
-        model.resize_token_embeddings(len(tokenizer))
+        model.resize_token_embeddings(len(tokenizer), mean_resizing=False)
+
     END_ID = tokenizer.convert_tokens_to_ids("<END>")
-    stop = StoppingCriteriaList([StopOnToken([END_ID])])
+    EOT_ID  = tokenizer.convert_tokens_to_ids("<|eot_id|>")
+    stop = StoppingCriteriaList([StopOnToken([END_ID, EOT_ID])])
 
     torch.cuda.empty_cache()
     with torch.no_grad():
         output = model.generate(
-            **inputs, 
+            **inputs,
             stopping_criteria=stop,
             max_new_tokens=100,
             return_dict_in_generate=True,
@@ -50,7 +52,7 @@ def generate_response_with_latents(model, tokenizer, input_text):
         )
 
     generated_tokens = output.sequences[0][inputs['input_ids'].shape[-1]:]
-    response_text = tokenizer.decode(generated_tokens, skip_special_tokens=False).split("<END>")[0].strip()
+    response_text = tokenizer.decode(generated_tokens, skip_special_tokens=True).split("<END>")[0].strip()
     response_text = format_bullets(response_text)
 
     # Extract latents from final step of generation
